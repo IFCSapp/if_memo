@@ -63,6 +63,19 @@
       position: relative;
     }
 
+#btn-back {
+  width: 60px;
+  justify-content: flex-start;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#btn-back.hidden {
+  display: inline-flex !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
     .app-header {
       position: sticky;
       top: 0;
@@ -596,6 +609,10 @@
           <p class="text-sub" style="font-size: 0.95rem;">入力のヒントになる言葉を整えたり、データをバックアップしたりできます。使いやすい形に少しずつ整えていきましょう。</p>
         </div>
 
+        <div class="mt-2 text-sub" id="app-version-line">
+          バージョン: <span id="app-version-text">-</span>
+        </div>
+
         <div class="card mb-4" style="padding: 0; overflow: hidden;">
           <button class="settings-toggle-btn" aria-expanded="true" aria-controls="settings-keywords">
             <div>
@@ -761,6 +778,8 @@
     // ==========================================
     // 1. Utilities (ヘルパー関数)
     // ==========================================
+
+    const APP_VERSION = 'v1.0.0';
     
     function generateId() {
       if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -2141,27 +2160,118 @@
       }
     };
 
-    // ==========================================
-    // 5. 起動
-    // ==========================================
-    window.addEventListener('DOMContentLoaded', () => {
-      App.init();
-    });
 
-  </script>
+let swRegistration = null;
+let refreshing = false;
 
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-      try {
-        await navigator.serviceWorker.register('./sw.js');
-        console.log('Service Worker registered');
-      } catch (error) {
-        console.error('Service Worker registration failed:', error);
+function showUpdateToast() {
+  const toast = document.getElementById('update-toast');
+  if (toast) toast.classList.remove('hidden');
+}
+
+function hideUpdateToast() {
+  const toast = document.getElementById('update-toast');
+  if (toast) toast.classList.add('hidden');
+}
+
+function setupUpdateToastEvents() {
+  const btnNow = document.getElementById('btn-update-now');
+  const btnLater = document.getElementById('btn-update-later');
+
+  if (btnNow) {
+    btnNow.addEventListener('click', () => {
+      if (swRegistration && swRegistration.waiting) {
+        swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
     });
   }
-</script>
+
+  if (btnLater) {
+    btnLater.addEventListener('click', () => {
+      hideUpdateToast();
+    });
+  }
+}
+
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+
+  window.addEventListener('load', async () => {
+    try {
+      const registration = await navigator.serviceWorker.register('./sw.js');
+      swRegistration = registration;
+
+      // すでに waiting があれば更新通知
+      if (registration.waiting) {
+        showUpdateToast();
+      }
+
+      // 新しいSWが来たとき
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        if (!newWorker) return;
+
+        newWorker.addEventListener('statechange', () => {
+          // 既存ページを制御中なら「更新あり」と判断
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdateToast();
+          }
+        });
+      });
+
+      // controller が切り替わったら一度だけ再読み込み
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+    } catch (error) {
+      console.error('Service Worker registration failed:', error);
+    }
+  });
+}
+
+    // ==========================================
+    // 5. 起動
+    // ==========================================
+
+    function renderAppVersion() {
+      const el = document.getElementById('app-version-text');
+      if (el) el.textContent = APP_VERSION;
+    }
+
+window.addEventListener('DOMContentLoaded', () => {
+  renderAppVersion();
+  setupUpdateToastEvents();
+  registerServiceWorker();
+  App.init();
+});
+
+  </script>
+
+<div id="update-toast" class="hidden" style="
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: min(92vw, 520px);
+  background: var(--surface);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 1rem;
+">
+  <div style="font-weight: 600; margin-bottom: 0.4rem;">新しい版があります</div>
+  <div class="text-sub" style="margin-bottom: 0.9rem;">
+    更新すると、最新の内容に切り替わります。
+  </div>
+  <div class="flex gap-2">
+    <button id="btn-update-now" class="btn btn-primary" style="flex: 1;">更新する</button>
+    <button id="btn-update-later" class="btn btn-secondary" style="flex: 1;">あとで</button>
+  </div>
+</div>
 
 </body>
 </html>

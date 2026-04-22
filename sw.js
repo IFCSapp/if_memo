@@ -1,4 +1,5 @@
-const CACHE_NAME = 'restart-memo-v1';
+const SW_VERSION = 'v1.0.0';
+const CACHE_NAME = `restart-memo-${SW_VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
@@ -11,7 +12,6 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -47,5 +47,13 @@ self.addEventListener('fetch', (event) => {
         return cached || fetch(event.request);
       })
     );
+  }
+});
+
+self.addEventListener('message', (event) => {
+  if (!event.data) return;
+
+  if (event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
   }
 });

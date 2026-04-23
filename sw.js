@@ -1,4 +1,4 @@
-const SW_VERSION = 'v1.0.1';
+const SW_VERSION = 'v1.1.0';
 const CACHE_NAME = `restart-memo-${SW_VERSION}`;
 const APP_SHELL = [
   './',

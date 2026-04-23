@@ -123,7 +123,7 @@
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, opacity 0.2s, border-color 0.2s, color 0.2s;
+            transition: background-color 0.2s, opacity 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
             text-decoration: none;
             min-height: 44px; /* Touch target size */
         }
@@ -138,24 +138,20 @@
                 outline-offset: 2px;
             }
 
+            .btn:active:not(:disabled) {
+                transform: scale(0.98);
+            }
+
         .btn-primary {
             background-color: var(--primary);
             color: #ffffff;
         }
-
-            .btn-primary:hover:not(:disabled) {
-                background-color: var(--primary-hover);
-            }
 
         .btn-secondary {
             background-color: var(--surface);
             color: var(--text-main);
             border: 1px solid var(--border);
         }
-
-            .btn-secondary:hover:not(:disabled) {
-                background-color: var(--bg-color);
-            }
 
         .btn-text {
             background: none;
@@ -307,10 +303,6 @@
             transition: background-color 0.2s;
         }
 
-            .btn-helper-toggle:hover {
-                background-color: var(--border);
-            }
-
         .helper-box {
             background-color: var(--bg-color);
             border: 1px dashed var(--border);
@@ -343,11 +335,32 @@
             user-select: none;
         }
 
-            .keyword-chip:hover, .keyword-chip:active {
+            .keyword-chip:active {
                 background-color: var(--primary);
                 color: #fff;
                 border-color: var(--primary);
             }
+
+        /* --- Hover Styles (Mobile Sticky Hover Prevention) --- */
+        @media (hover: hover) {
+            .btn-primary:hover:not(:disabled) {
+                background-color: var(--primary-hover);
+            }
+
+            .btn-secondary:hover:not(:disabled) {
+                background-color: var(--bg-color);
+            }
+
+            .btn-helper-toggle:hover {
+                background-color: var(--border);
+            }
+
+            .keyword-chip:hover {
+                background-color: var(--primary);
+                color: #fff;
+                border-color: var(--primary);
+            }
+        }
 
         /* --- Settings Toggle UI --- */
         .settings-toggle-btn {
@@ -811,7 +824,8 @@
         </div>
 
         <!-- Bottom Navigation -->
-        <nav class="app-nav" id="bottom-nav">
+        <!-- 修正: ちらつきを防ぐため、初期状態をhiddenに変更 -->
+        <nav class="app-nav hidden" id="bottom-nav">
             <a href="#record" class="nav-item active" data-nav="record">
                 <span>✍️</span>
                 記録
@@ -836,7 +850,7 @@
         // 1. Utilities (ヘルパー関数)
         // ==========================================
 
-        const APP_VERSION = 'v1.1.0';
+        const APP_VERSION = 'v1.1.1';
 
         function generateId() {
             if (typeof crypto !== 'undefined' && crypto.randomUUID) {

@@ -9,22 +9,35 @@ const APP_SHELL = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
-  );
+    event.waitUntil(
+        (async () => {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.addAll(APP_SHELL);
+
+            // ★ 追加：全クライアントに通知
+            const clients = await self.clients.matchAll({
+                type: 'window',
+                includeUncontrolled: true
+            });
+            clients.forEach(client => {
+                client.postMessage({ type: 'SW_UPDATE_AVAILABLE' });
+            });
+        })()
+    );
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    )
-  );
-  self.clients.claim();
+    event.waitUntil(
+        (async () => {
+            const keys = await caches.keys();
+            await Promise.all(
+                keys
+                    .filter((key) => key !== CACHE_NAME)
+                    .map((key) => caches.delete(key))
+            );
+            await self.clients.claim();
+        })()
+    );
 });
 
 self.addEventListener('fetch', (event) => {

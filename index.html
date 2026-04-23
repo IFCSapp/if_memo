@@ -63,19 +63,6 @@
             position: relative;
         }
 
-        #btn-back {
-            width: 60px;
-            justify-content: flex-start;
-            padding-left: 0;
-            padding-right: 0;
-        }
-
-            #btn-back.hidden {
-                display: inline-flex !important;
-                visibility: hidden;
-                pointer-events: none;
-            }
-
         .app-header {
             position: sticky;
             top: 0;
@@ -89,15 +76,35 @@
             height: 64px;
         }
 
+        #btn-back {
+            flex: 1;
+            justify-content: flex-start;
+            padding-left: 0;
+            padding-right: 0;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+
+            #btn-back.hidden {
+                display: inline-flex !important;
+                visibility: hidden;
+                pointer-events: none;
+            }
+
+        .header-spacer {
+            flex: 1;
+        }
+
         .header-title {
             font-size: 1.25rem;
             font-weight: bold;
-            flex-grow: 1;
+            flex: 2;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            white-space: nowrap;
         }
 
         .app-main {
@@ -450,12 +457,12 @@
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">
-            <button id="btn-back" class="btn btn-text hidden">◀ 戻る</button>
+            <button id="btn-back" class="btn btn-text hidden">◀ 前画面に戻る</button>
             <h1 id="header-title" class="header-title">
                 立て直しメモ
                 <span id="record-dirty-badge" class="dirty-badge hidden">未保存</span>
             </h1>
-            <div style="width: 60px;"></div> <!-- Spacer for centering -->
+            <div class="header-spacer"></div> <!-- Spacer for centering -->
         </header>
 
         <!-- Message Toast -->
@@ -597,6 +604,10 @@
                     <!-- JSで詳細を生成 -->
                     <h2 id="detail-title" class="mb-2"></h2>
                     <div id="detail-date" class="text-sub mb-4" style="font-size: 0.85rem;"></div>
+
+                    <div class="mb-4">
+                        <button id="btn-detail-back-list" class="btn btn-secondary btn-block" style="font-size: 0.95rem; padding: 0.75rem;">一覧に戻る</button>
+                    </div>
 
                     <div class="flex gap-4 mb-4 pb-4" style="border-bottom: 1px solid var(--border);">
                         <button id="btn-detail-edit" class="btn btn-secondary" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">編集する</button>
@@ -825,7 +836,7 @@
         // 1. Utilities (ヘルパー関数)
         // ==========================================
 
-        const APP_VERSION = 'v1.0.1';
+        const APP_VERSION = 'v1.1.0';
 
         function generateId() {
             if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -1511,7 +1522,9 @@
                         showMessage('記録を保存しました');
                         this.setInitialState(); // 保存完了後は状態をクリアして同期
                         this.helperStates = {};
-                        window.location.hash = `#detail/${id}`;
+
+                        // 履歴に新規作成画面を残さず、詳細画面のURLに置き換える処理
+                        window.location.replace(`#detail/${id}`);
                     } catch (e) {
                         console.error(e);
                         showMessage('うまく記録できませんでした。時間をおいてお試しください。', true);
@@ -1671,6 +1684,10 @@
 
                     document.getElementById('detail-nextStep').textContent = entry.nextStep || '（未入力）';
                     document.getElementById('detail-secondStep').textContent = entry.secondStep || '（未入力）';
+
+                    document.getElementById('btn-detail-back-list').onclick = () => {
+                        window.location.hash = '#list';
+                    };
 
                     document.getElementById('btn-detail-export').onclick = () => {
                         Views.SupportExport.show([entry]);

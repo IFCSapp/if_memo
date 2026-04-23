@@ -1,2255 +1,2315 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>立て直しメモ</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>立て直しメモ</title>
 
-  <link rel="manifest" href="./manifest.webmanifest">
-  <meta name="theme-color" content="#0d9488">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#0d9488">
 
-  <style>
-    /* --- CSS Variables & Theming --- */
-    :root {
-      --bg-color: #f8fafc;
-      --text-main: #334155;
-      --text-sub: #64748b;
-      --primary: #0d9488;
-      --primary-hover: #0f766e;
-      --surface: #ffffff;
-      --border: #e2e8f0;
-      --error: #ef4444;
-      --success: #10b981;
-      --radius: 12px;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
+    <style>
+        /* --- CSS Variables & Theming --- */
+        :root {
+            --bg-color: #f8fafc;
+            --text-main: #334155;
+            --text-sub: #64748b;
+            --primary: #0d9488;
+            --primary-hover: #0f766e;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --error: #ef4444;
+            --success: #10b981;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-color: #0f172a;
-        --text-main: #f1f5f9;
-        --text-sub: #94a3b8;
-        --primary: #14b8a6;
-        --primary-hover: #2dd4bf;
-        --surface: #1e293b;
-        --border: #334155;
-      }
-    }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #0f172a;
+                --text-main: #f1f5f9;
+                --text-sub: #94a3b8;
+                --primary: #14b8a6;
+                --primary-hover: #2dd4bf;
+                --surface: #1e293b;
+                --border: #334155;
+            }
+        }
 
-    /* --- Reset & Base --- */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        /* --- Reset & Base --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      line-height: 1.6;
-      font-size: 16px;
-      -webkit-font-smoothing: antialiased;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    /* --- Layout --- */
-    .app-container {
-      max-width: 800px;
-      margin: 0 auto;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background-color: var(--bg-color);
-      position: relative;
-    }
+        /* --- Layout --- */
+        .app-container {
+            max-width: 800px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+            position: relative;
+        }
 
-#btn-back {
-  width: 60px;
-  justify-content: flex-start;
-  padding-left: 0;
-  padding-right: 0;
-}
+        #btn-back {
+            width: 60px;
+            justify-content: flex-start;
+            padding-left: 0;
+            padding-right: 0;
+        }
 
-#btn-back.hidden {
-  display: inline-flex !important;
-  visibility: hidden;
-  pointer-events: none;
-}
+            #btn-back.hidden {
+                display: inline-flex !important;
+                visibility: hidden;
+                pointer-events: none;
+            }
 
-    .app-header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background-color: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
-    }
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
 
-    .header-title {
-      font-size: 1.25rem;
-      font-weight: bold;
-      flex-grow: 1;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            flex-grow: 1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
 
-    .app-main {
-      flex-grow: 1;
-      padding: 1.5rem 1rem 5rem 1rem; /* bottom padding for nav */
-    }
+        .app-main {
+            flex-grow: 1;
+            padding: 1.5rem 1rem 5rem 1rem; /* bottom padding for nav */
+        }
 
-    /* --- Components --- */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.75rem 1.5rem;
-      border-radius: var(--radius);
-      border: none;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s, opacity 0.2s, border-color 0.2s, color 0.2s;
-      text-decoration: none;
-      min-height: 44px; /* Touch target size */
-    }
-    
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+        /* --- Components --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s, border-color 0.2s, color 0.2s;
+            text-decoration: none;
+            min-height: 44px; /* Touch target size */
+        }
 
-    .btn:focus-visible {
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
-    }
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
 
-    .btn-primary {
-      background-color: var(--primary);
-      color: #ffffff;
-    }
+            .btn:focus-visible {
+                outline: 2px solid var(--primary);
+                outline-offset: 2px;
+            }
 
-    .btn-primary:hover:not(:disabled) {
-      background-color: var(--primary-hover);
-    }
+        .btn-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
 
-    .btn-secondary {
-      background-color: var(--surface);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-    }
+            .btn-primary:hover:not(:disabled) {
+                background-color: var(--primary-hover);
+            }
 
-    .btn-secondary:hover:not(:disabled) {
-      background-color: var(--bg-color);
-    }
+        .btn-secondary {
+            background-color: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
 
-    .btn-text {
-      background: none;
-      color: var(--primary);
-      padding: 0.5rem;
-    }
+            .btn-secondary:hover:not(:disabled) {
+                background-color: var(--bg-color);
+            }
 
-    .btn-block {
-      display: flex;
-      width: 100%;
-    }
+        .btn-text {
+            background: none;
+            color: var(--primary);
+            padding: 0.5rem;
+        }
 
-    .card {
-      background-color: var(--surface);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-    }
+        .btn-block {
+            display: flex;
+            width: 100%;
+        }
 
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
+        .card {
+            background-color: var(--surface);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
 
-    .form-label {
-      display: block;
-      font-weight: 600;
-      color: var(--text-main);
-    }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
 
-    .form-hint {
-      display: block;
-      font-size: 0.875rem;
-      color: var(--text-sub);
-    }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-main);
+        }
 
-    .form-control {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1rem;
-      font-family: inherit;
-      background-color: var(--surface);
-      color: var(--text-main);
-    }
+        .form-hint {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-sub);
+        }
 
-    .form-control:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
-    }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            background-color: var(--surface);
+            color: var(--text-main);
+        }
 
-    textarea.form-control {
-      resize: vertical;
-      min-height: 100px;
-    }
+            .form-control:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+            }
 
-    /* --- Utilities --- */
-    .hidden {
-      display: none !important;
-    }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
 
-    .text-center { text-align: center; }
-    .mt-1 { margin-top: 0.25rem; }
-    .mt-2 { margin-top: 0.5rem; }
-    .mt-4 { margin-top: 1rem; }
-    .mb-2 { margin-bottom: 0.5rem; }
-    .mb-4 { margin-bottom: 1rem; }
-    .text-sub { color: var(--text-sub); font-size: 0.9rem; }
-    
-    .flex { display: flex; }
-    .justify-between { justify-content: space-between; }
-    .gap-2 { gap: 0.5rem; }
-    .gap-4 { gap: 1rem; }
+        /* --- Utilities --- */
+        .hidden {
+            display: none !important;
+        }
 
-    /* --- List Item --- */
-    .list-item {
-      display: block;
-      background-color: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      text-decoration: none;
-      color: inherit;
-      transition: transform 0.1s;
-    }
-    .list-item:active {
-      transform: scale(0.98);
-    }
-    .list-item-title {
-      font-weight: bold;
-      font-size: 1.1rem;
-      margin-bottom: 0.25rem;
-    }
-    .list-item-meta {
-      font-size: 0.85rem;
-      color: var(--text-sub);
-    }
+        .text-center {
+            text-align: center;
+        }
 
-    /* --- Keyword Helper UI --- */
-    .btn-helper-toggle {
-      background-color: transparent;
-      color: var(--primary);
-      border: 1px solid var(--border);
-      padding: 0.25rem 0.75rem;
-      font-size: 0.85rem;
-      border-radius: 16px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      transition: background-color 0.2s;
-    }
-    .btn-helper-toggle:hover {
-      background-color: var(--border);
-    }
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
 
-    .helper-box {
-      background-color: var(--bg-color);
-      border: 1px dashed var(--border);
-      border-radius: 8px;
-      padding: 0.75rem;
-      margin-bottom: 0.75rem;
-    }
-    .helper-title {
-      font-size: 0.85rem;
-      color: var(--text-sub);
-      margin-bottom: 0.5rem;
-    }
-    .keyword-chip-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .keyword-chip {
-      background-color: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 0.4rem 0.8rem;
-      border-radius: 16px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background-color 0.2s, border-color 0.2s;
-      user-select: none;
-    }
-    .keyword-chip:hover, .keyword-chip:active {
-      background-color: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-    }
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
 
-    /* --- Settings Toggle UI --- */
-    .settings-toggle-btn {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: none;
-      border: none;
-      padding: 1.5rem;
-      cursor: pointer;
-      text-align: left;
-      font-family: inherit;
-      color: var(--text-main);
-    }
-    .settings-toggle-btn[aria-expanded="true"] .toggle-title {
-      color: var(--primary);
-    }
+        .mt-4 {
+            margin-top: 1rem;
+        }
 
-    /* --- Bottom Navigation --- */
-    .app-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: var(--surface);
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-around;
-      padding: 0.5rem 0;
-      padding-bottom: env(safe-area-inset-bottom, 0.5rem);
-      z-index: 10;
-    }
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
 
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-sub);
-      text-decoration: none;
-      font-size: 0.75rem;
-      padding: 0.5rem 0.25rem;
-      flex: 1;
-      min-width: 0;
-      letter-spacing: -0.02em;
-    }
-    
-    .nav-item span {
-      font-size: 1.1rem;
-      margin-bottom: 2px;
-    }
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
 
-    .nav-item.active {
-      color: var(--primary);
-      font-weight: bold;
-    }
+        .text-sub {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
 
-    /* Message Box */
-    #message-box {
-      position: fixed;
-      top: 1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: var(--surface);
-      color: var(--text-main);
-      padding: 1rem 1.5rem;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border-left: 4px solid var(--primary);
-      z-index: 9999;
-      transition: opacity 0.3s, transform 0.3s;
-      opacity: 0;
-      pointer-events: none;
-    }
-    #message-box.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(10px);
-    }
-    #message-box.error {
-      border-left-color: var(--error);
-    }
-    
-    /* Record Dirty Badge */
-    .dirty-badge {
-      font-size: 0.7rem;
-      color: var(--error);
-      background-color: #fee2e2;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: normal;
-      vertical-align: middle;
-    }
-    @media (prefers-color-scheme: dark) {
-      .dirty-badge { background-color: rgba(239, 68, 68, 0.2); }
-    }
-  </style>
+        .flex {
+            display: flex;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        /* --- List Item --- */
+        .list-item {
+            display: block;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.1s;
+        }
+
+            .list-item:active {
+                transform: scale(0.98);
+            }
+
+        .list-item-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .list-item-meta {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
+
+        /* --- Keyword Helper UI --- */
+        .btn-helper-toggle {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--border);
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 16px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+            .btn-helper-toggle:hover {
+                background-color: var(--border);
+            }
+
+        .helper-box {
+            background-color: var(--bg-color);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .helper-title {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-bottom: 0.5rem;
+        }
+
+        .keyword-chip-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .keyword-chip {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.4rem 0.8rem;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+            user-select: none;
+        }
+
+            .keyword-chip:hover, .keyword-chip:active {
+                background-color: var(--primary);
+                color: #fff;
+                border-color: var(--primary);
+            }
+
+        /* --- Settings Toggle UI --- */
+        .settings-toggle-btn {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: none;
+            border: none;
+            padding: 1.5rem;
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            color: var(--text-main);
+        }
+
+            .settings-toggle-btn[aria-expanded="true"] .toggle-title {
+                color: var(--primary);
+            }
+
+        /* --- Bottom Navigation --- */
+        .app-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+            z-index: 10;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sub);
+            text-decoration: none;
+            font-size: 0.75rem;
+            padding: 0.5rem 0.25rem;
+            flex: 1;
+            min-width: 0;
+            letter-spacing: -0.02em;
+        }
+
+            .nav-item span {
+                font-size: 1.1rem;
+                margin-bottom: 2px;
+            }
+
+            .nav-item.active {
+                color: var(--primary);
+                font-weight: bold;
+            }
+
+        /* Message Box */
+        #message-box {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--surface);
+            color: var(--text-main);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            z-index: 9999;
+            transition: opacity 0.3s, transform 0.3s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+            #message-box.show {
+                opacity: 1;
+                transform: translateX(-50%) translateY(10px);
+            }
+
+            #message-box.error {
+                border-left-color: var(--error);
+            }
+
+        /* Record Dirty Badge */
+        .dirty-badge {
+            font-size: 0.7rem;
+            color: var(--error);
+            background-color: #fee2e2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: normal;
+            vertical-align: middle;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .dirty-badge {
+                background-color: rgba(239, 68, 68, 0.2);
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <!-- Header -->
-    <header class="app-header">
-      <button id="btn-back" class="btn btn-text hidden">◀ 戻る</button>
-      <h1 id="header-title" class="header-title">
-        立て直しメモ
-        <span id="record-dirty-badge" class="dirty-badge hidden">未保存</span>
-      </h1>
-      <div style="width: 60px;"></div> <!-- Spacer for centering -->
-    </header>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <button id="btn-back" class="btn btn-text hidden">◀ 戻る</button>
+            <h1 id="header-title" class="header-title">
+                立て直しメモ
+                <span id="record-dirty-badge" class="dirty-badge hidden">未保存</span>
+            </h1>
+            <div style="width: 60px;"></div> <!-- Spacer for centering -->
+        </header>
 
-    <!-- Message Toast -->
-    <div id="message-box"></div>
+        <!-- Message Toast -->
+        <div id="message-box"></div>
 
-    <!-- Main Content Area -->
-    <main class="app-main" id="main-content">
-      
-      <!-- ========================================== -->
-      <!-- View: Guide (初回ガイド) -->
-      <!-- ========================================== -->
-      <section id="view-guide" class="view hidden">
-        <div class="card text-center">
-          <h2 class="mb-4">立て直しメモへようこそ</h2>
-          <p class="mb-4 text-sub" style="text-align: left;">
-            このアプリは、日々の出来事を整理し、「次の一手」を見つけるためのプライベートな記録ツールです。
-          </p>
-          <div style="text-align: left; background-color: var(--bg-color); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-            <strong>安心してお使いいただくために：</strong>
-            <ul style="margin-top: 0.5rem; padding-left: 1.5rem; color: var(--text-sub); font-size: 0.9rem;">
-              <li>記録は全てお使いの端末内にのみ保存されます。</li>
-              <li>外部へのデータ送信は一切行いません。</li>
-            </ul>
-          </div>
-          <div style="text-align: left; border-left: 4px solid var(--primary); padding-left: 1rem; margin-bottom: 2rem;">
-            <strong>⚠️ 入力時のご注意</strong><br>
-            <span class="text-sub">
-              パスワード、口座番号、他人の連絡先など、万が一端末を紛失した際に困るような機微な個人情報は記入しないようお気をつけください。
-            </span>
-          </div>
-          <button id="btn-guide-start" class="btn btn-primary btn-block">同意して使い始める</button>
-        </div>
-      </section>
+        <!-- Main Content Area -->
+        <main class="app-main" id="main-content">
 
-      <!-- ========================================== -->
-      <!-- View: Record (新規記録 / 編集) -->
-      <!-- ========================================== -->
-      <section id="view-record" class="view hidden">
-        <div class="card">
-          <p class="text-sub mb-4">反省するためではなく、次にどう動くかを見つけるためのメモです。書けるところだけ書きましょう。</p>
-          
-          <div style="background-color: var(--bg-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.9rem;">
-            <strong style="color: var(--primary);">入力の前に</strong><br>
-            <span class="text-sub">このメモは端末内だけに保存されます。安心して使えるよう、パスワードや口座番号、他人の連絡先などの機微な個人情報は書かないようお気をつけください。</span>
-          </div>
+            <!-- ========================================== -->
+            <!-- View: Guide (初回ガイド) -->
+            <!-- ========================================== -->
+            <section id="view-guide" class="view hidden">
+                <div class="card text-center">
+                    <h2 class="mb-4">立て直しメモへようこそ</h2>
+                    <p class="mb-4 text-sub" style="text-align: left;">
+                        このアプリは、日々の出来事を整理し、「次の一手」を見つけるためのプライベートな記録ツールです。
+                    </p>
+                    <div style="text-align: left; background-color: var(--bg-color); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <strong>安心してお使いいただくために：</strong>
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem; color: var(--text-sub); font-size: 0.9rem;">
+                            <li>記録は全てお使いの端末内にのみ保存されます。</li>
+                            <li>外部へのデータ送信は一切行いません。</li>
+                        </ul>
+                    </div>
+                    <div style="text-align: left; border-left: 4px solid var(--primary); padding-left: 1rem; margin-bottom: 2rem;">
+                        <strong>⚠️ 入力時のご注意</strong><br>
+                        <span class="text-sub">
+                            パスワード、口座番号、他人の連絡先など、万が一端末を紛失した際に困るような機微な個人情報は記入しないようお気をつけください。
+                        </span>
+                    </div>
+                    <button id="btn-guide-start" class="btn btn-primary btn-block">同意して使い始める</button>
+                </div>
+            </section>
 
-          <div class="form-group">
-            <label class="form-label mb-2" for="record-title">タイトル（必須）</label>
-            <input type="text" id="record-title" class="form-control record-input" placeholder="例：朝の準備が遅れた">
-          </div>
+            <!-- ========================================== -->
+            <!-- View: Record (新規記録 / 編集) -->
+            <!-- ========================================== -->
+            <section id="view-record" class="view hidden">
+                <div class="card">
+                    <p class="text-sub mb-4">反省するためではなく、次にどう動くかを見つけるためのメモです。書けるところだけ書きましょう。</p>
 
-          <div class="form-group">
-            <label class="form-label" for="record-fact">実際に起きたこと</label>
-            <span class="form-hint mt-1 mb-2">事実を短く客観的に書きます。</span>
-            <textarea id="record-fact" class="form-control record-input" placeholder="例：8時に起きる予定が、9時まで動けなかった。"></textarea>
-          </div>
+                    <div style="background-color: var(--bg-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                        <strong style="color: var(--primary);">入力の前に</strong><br>
+                        <span class="text-sub">このメモは端末内だけに保存されます。安心して使えるよう、パスワードや口座番号、他人の連絡先などの機微な個人情報は書かないようお気をつけください。</span>
+                    </div>
 
-          <div class="form-group">
-            <label class="form-label" for="record-signs">前兆</label>
-            <span class="form-hint mt-1 mb-2">その前に起きていたサイン（改行で複数入力）</span>
-            <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-signs" aria-expanded="false" aria-controls="helper-signs">キーワード ▼</button>
-            <div id="helper-signs" class="helper-box hidden"></div>
-            <textarea id="record-signs" class="form-control record-input" rows="3" placeholder="例：前日の夜、動画を遅くまで見ていた"></textarea>
-          </div>
+                    <div class="form-group">
+                        <label class="form-label mb-2" for="record-title">タイトル（必須）</label>
+                        <input type="text" id="record-title" class="form-control record-input" placeholder="例：朝の準備が遅れた">
+                    </div>
 
-          <div class="form-group">
-            <label class="form-label" for="record-notice">よく出る通知</label>
-            <span class="form-hint mt-1 mb-2">頭に浮かびやすい言葉や、自分を止めやすい考えがあればメモします（改行で複数入力）</span>
-            <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-notice" aria-expanded="false" aria-controls="helper-notice">キーワード ▼</button>
-            <div id="helper-notice" class="helper-box hidden"></div>
-            <textarea id="record-notice" class="form-control record-input" rows="3" placeholder="例：ちゃんとしないとだめだ"></textarea>
-          </div>
+                    <div class="form-group">
+                        <label class="form-label" for="record-fact">実際に起きたこと</label>
+                        <span class="form-hint mt-1 mb-2">事実を短く客観的に書きます。</span>
+                        <textarea id="record-fact" class="form-control record-input" placeholder="例：8時に起きる予定が、9時まで動けなかった。"></textarea>
+                    </div>
 
-          <div class="form-group">
-            <label class="form-label" for="record-resources">使える資源</label>
-            <span class="form-hint mt-1 mb-2">助けになる人、物、制度など（改行で複数入力）</span>
-            <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-resources" aria-expanded="false" aria-controls="helper-resources">キーワード ▼</button>
-            <div id="helper-resources" class="helper-box hidden"></div>
-            <textarea id="record-resources" class="form-control record-input" rows="3" placeholder="例：事業所の職員さん、アラームアプリ"></textarea>
-          </div>
+                    <div class="form-group">
+                        <label class="form-label" for="record-signs">前兆</label>
+                        <span class="form-hint mt-1 mb-2">その前に起きていたサイン（改行で複数入力）</span>
+                        <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-signs" aria-expanded="false" aria-controls="helper-signs">キーワード ▼</button>
+                        <div id="helper-signs" class="helper-box hidden"></div>
+                        <textarea id="record-signs" class="form-control record-input" rows="3" placeholder="例：前日の夜、動画を遅くまで見ていた"></textarea>
+                    </div>
 
-          <div class="form-group">
-            <label class="form-label" for="record-direction">行動指針</label>
-            <span class="form-hint mt-1 mb-2">この場面で大事にしたい向きや、少しでも近づきたい行動の方向を書きます（改行で複数入力）</span>
-            <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-direction" aria-expanded="false" aria-controls="helper-direction">キーワード ▼</button>
-            <div id="helper-direction" class="helper-box hidden"></div>
-            <textarea id="record-direction" class="form-control record-input" rows="3" placeholder="例：自分を追い込みすぎない&#10;例：相手への配慮を忘れない"></textarea>
-          </div>
+                    <div class="form-group">
+                        <label class="form-label" for="record-notice">よく出る通知</label>
+                        <span class="form-hint mt-1 mb-2">頭に浮かびやすい言葉や、自分を止めやすい考えがあればメモします（改行で複数入力）</span>
+                        <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-notice" aria-expanded="false" aria-controls="helper-notice">キーワード ▼</button>
+                        <div id="helper-notice" class="helper-box hidden"></div>
+                        <textarea id="record-notice" class="form-control record-input" rows="3" placeholder="例：ちゃんとしないとだめだ"></textarea>
+                    </div>
 
-          <div class="form-group" style="background-color: var(--bg-color); padding: 1rem; border-radius: 8px;">
-            <label class="form-label" style="color: var(--primary);" for="record-nextStep">次の一手</label>
-            <span class="form-hint mt-1 mb-2">次同じことが起きそうなとき、まずどうするか</span>
-            <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-nextStep" aria-expanded="false" aria-controls="helper-nextStep" style="background-color: var(--surface);">キーワード ▼</button>
-            <div id="helper-nextStep" class="helper-box hidden" style="background-color: var(--surface);"></div>
-            <textarea id="record-nextStep" class="form-control record-input" placeholder="例：遅れそうだと気づいたら、一報を入れる"></textarea>
-            
-            <label class="form-label mt-4" for="record-secondStep">二手目</label>
-            <span class="form-hint mt-1 mb-2">一手目が難しかったらどうするか</span>
-            <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-secondStep" aria-expanded="false" aria-controls="helper-secondStep" style="background-color: var(--surface);">キーワード ▼</button>
-            <div id="helper-secondStep" class="helper-box hidden" style="background-color: var(--surface);"></div>
-            <textarea id="record-secondStep" class="form-control record-input" placeholder="例：電話が難しければ、メールで短く伝える"></textarea>
-          </div>
+                    <div class="form-group">
+                        <label class="form-label" for="record-resources">使える資源</label>
+                        <span class="form-hint mt-1 mb-2">助けになる人、物、制度など（改行で複数入力）</span>
+                        <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-resources" aria-expanded="false" aria-controls="helper-resources">キーワード ▼</button>
+                        <div id="helper-resources" class="helper-box hidden"></div>
+                        <textarea id="record-resources" class="form-control record-input" rows="3" placeholder="例：事業所の職員さん、アラームアプリ"></textarea>
+                    </div>
 
-          <div class="form-group">
-            <label class="form-label mb-2" for="record-review">ふり返りメモ</label>
-            <textarea id="record-review" class="form-control record-input" placeholder="後から気づいたことなどがあれば"></textarea>
-          </div>
+                    <div class="form-group">
+                        <label class="form-label" for="record-direction">行動指針</label>
+                        <span class="form-hint mt-1 mb-2">この場面で大事にしたい向きや、少しでも近づきたい行動の方向を書きます（改行で複数入力）</span>
+                        <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-direction" aria-expanded="false" aria-controls="helper-direction">キーワード ▼</button>
+                        <div id="helper-direction" class="helper-box hidden"></div>
+                        <textarea id="record-direction" class="form-control record-input" rows="3" placeholder="例：自分を追い込みすぎない&#10;例：相手への配慮を忘れない"></textarea>
+                    </div>
 
-          <div class="flex gap-4 mt-4 mb-2">
-            <button id="btn-record-save" class="btn btn-primary btn-block">保存する</button>
-          </div>
-          <div class="flex gap-4">
-            <button id="btn-record-back-list" class="btn btn-secondary" style="flex: 1;">一覧に戻る</button>
-            <button id="btn-record-cancel" class="btn btn-secondary" style="flex: 1;">入力をやめる</button>
-          </div>
-        </div>
-      </section>
+                    <div class="form-group" style="background-color: var(--bg-color); padding: 1rem; border-radius: 8px;">
+                        <label class="form-label" style="color: var(--primary);" for="record-nextStep">次の一手</label>
+                        <span class="form-hint mt-1 mb-2">次同じことが起きそうなとき、まずどうするか</span>
+                        <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-nextStep" aria-expanded="false" aria-controls="helper-nextStep" style="background-color: var(--surface);">キーワード ▼</button>
+                        <div id="helper-nextStep" class="helper-box hidden" style="background-color: var(--surface);"></div>
+                        <textarea id="record-nextStep" class="form-control record-input" placeholder="例：遅れそうだと気づいたら、一報を入れる"></textarea>
 
-      <!-- ========================================== -->
-      <!-- View: List (記録一覧) -->
-      <!-- ========================================== -->
-      <section id="view-list" class="view hidden">
-        <div id="list-actions" class="mb-4 flex justify-between" style="align-items: center; border-radius: var(--radius); transition: background-color 0.2s;">
-          <!-- JSで生成 -->
-        </div>
-        <div id="list-container">
-          <!-- JSでリストを生成 -->
-        </div>
-        <div id="list-empty" class="text-center text-sub hidden" style="padding: 2rem 0;">
-          まだ記録がありません。<br>「記録」から作成してみましょう。
-        </div>
-      </section>
+                        <label class="form-label mt-4" for="record-secondStep">二手目</label>
+                        <span class="form-hint mt-1 mb-2">一手目が難しかったらどうするか</span>
+                        <button type="button" class="btn-helper-toggle mb-2 hidden" data-target="helper-secondStep" aria-expanded="false" aria-controls="helper-secondStep" style="background-color: var(--surface);">キーワード ▼</button>
+                        <div id="helper-secondStep" class="helper-box hidden" style="background-color: var(--surface);"></div>
+                        <textarea id="record-secondStep" class="form-control record-input" placeholder="例：電話が難しければ、メールで短く伝える"></textarea>
+                    </div>
 
-      <!-- ========================================== -->
-      <!-- View: Detail (記録詳細) -->
-      <!-- ========================================== -->
-      <section id="view-detail" class="view hidden">
-        <div class="card" id="detail-card">
-          <!-- JSで詳細を生成 -->
-          <h2 id="detail-title" class="mb-2"></h2>
-          <div id="detail-date" class="text-sub mb-4" style="font-size: 0.85rem;"></div>
+                    <div class="form-group">
+                        <label class="form-label mb-2" for="record-review">ふり返りメモ</label>
+                        <textarea id="record-review" class="form-control record-input" placeholder="後から気づいたことなどがあれば"></textarea>
+                    </div>
 
-          <div class="flex gap-4 mb-4 pb-4" style="border-bottom: 1px solid var(--border);">
-            <button id="btn-detail-edit" class="btn btn-secondary" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">編集する</button>
-            <button id="btn-detail-export" class="btn btn-secondary" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">📤 支援用に書き出す</button>
-          </div>
+                    <div class="flex gap-4 mt-4 mb-2">
+                        <button id="btn-record-save" class="btn btn-primary btn-block">保存する</button>
+                    </div>
+                    <div class="flex gap-4">
+                        <button id="btn-record-back-list" class="btn btn-secondary" style="flex: 1;">一覧に戻る</button>
+                        <button id="btn-record-cancel" class="btn btn-secondary" style="flex: 1;">入力をやめる</button>
+                    </div>
+                </div>
+            </section>
 
-          <div class="mb-4">
-            <strong class="form-label text-sub">実際に起きたこと</strong>
-            <div id="detail-fact" style="white-space: pre-wrap;"></div>
-          </div>
+            <!-- ========================================== -->
+            <!-- View: List (記録一覧) -->
+            <!-- ========================================== -->
+            <section id="view-list" class="view hidden">
+                <div id="list-actions" class="mb-4 flex justify-between" style="align-items: center; border-radius: var(--radius); transition: background-color 0.2s;">
+                    <!-- JSで生成 -->
+                </div>
+                <div id="list-container">
+                    <!-- JSでリストを生成 -->
+                </div>
+                <div id="list-empty" class="text-center text-sub hidden" style="padding: 2rem 0;">
+                    まだ記録がありません。<br>「記録」から作成してみましょう。
+                </div>
+            </section>
 
-          <div class="mb-4">
-            <strong class="form-label text-sub">前兆</strong>
-            <ul id="detail-signs" style="padding-left: 1.5rem; margin-top: 0.25rem;"></ul>
-          </div>
-          
-          <div class="mb-4">
-            <strong class="form-label text-sub">よく出る通知</strong>
-            <ul id="detail-notice" style="padding-left: 1.5rem; margin-top: 0.25rem;"></ul>
-          </div>
+            <!-- ========================================== -->
+            <!-- View: Detail (記録詳細) -->
+            <!-- ========================================== -->
+            <section id="view-detail" class="view hidden">
+                <div class="card" id="detail-card">
+                    <!-- JSで詳細を生成 -->
+                    <h2 id="detail-title" class="mb-2"></h2>
+                    <div id="detail-date" class="text-sub mb-4" style="font-size: 0.85rem;"></div>
 
-          <div class="mb-4">
-            <strong class="form-label text-sub">使える資源</strong>
-            <ul id="detail-resources" style="padding-left: 1.5rem; margin-top: 0.25rem;"></ul>
-          </div>
+                    <div class="flex gap-4 mb-4 pb-4" style="border-bottom: 1px solid var(--border);">
+                        <button id="btn-detail-edit" class="btn btn-secondary" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">編集する</button>
+                        <button id="btn-detail-export" class="btn btn-secondary" style="flex: 1; font-size: 0.9rem; padding: 0.5rem;">📤 支援用に書き出す</button>
+                    </div>
 
-          <div class="mb-4">
-            <strong class="form-label text-sub">行動指針</strong>
-            <ul id="detail-direction" style="padding-left: 1.5rem; margin-top: 0.25rem;"></ul>
-          </div>
+                    <div class="mb-4">
+                        <strong class="form-label text-sub">実際に起きたこと</strong>
+                        <div id="detail-fact" style="white-space: pre-wrap;"></div>
+                    </div>
 
-          <div class="mb-4" style="background-color: var(--bg-color); padding: 1rem; border-radius: 8px;">
-            <strong class="form-label" style="color: var(--primary);">次の一手</strong>
-            <div id="detail-nextStep" style="white-space: pre-wrap;"></div>
-            
-            <div class="mt-2">
-              <strong class="form-label text-sub" style="font-size: 0.9rem;">二手目</strong>
-              <div id="detail-secondStep" style="white-space: pre-wrap; font-size: 0.9rem;"></div>
+                    <div class="mb-4">
+                        <strong class="form-label text-sub">前兆</strong>
+                        <ul id="detail-signs" style="padding-left: 1.5rem; margin-top: 0.25rem;"></ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <strong class="form-label text-sub">よく出る通知</strong>
+                        <ul id="detail-notice" style="padding-left: 1.5rem; margin-top: 0.25rem;"></ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <strong class="form-label text-sub">使える資源</strong>
+                        <ul id="detail-resources" style="padding-left: 1.5rem; margin-top: 0.25rem;"></ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <strong class="form-label text-sub">行動指針</strong>
+                        <ul id="detail-direction" style="padding-left: 1.5rem; margin-top: 0.25rem;"></ul>
+                    </div>
+
+                    <div class="mb-4" style="background-color: var(--bg-color); padding: 1rem; border-radius: 8px;">
+                        <strong class="form-label" style="color: var(--primary);">次の一手</strong>
+                        <div id="detail-nextStep" style="white-space: pre-wrap;"></div>
+
+                        <div class="mt-2">
+                            <strong class="form-label text-sub" style="font-size: 0.9rem;">二手目</strong>
+                            <div id="detail-secondStep" style="white-space: pre-wrap; font-size: 0.9rem;"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4" style="border-top: 1px solid var(--border);">
+                        <div class="mb-2 text-center text-sub" style="font-size: 0.85rem;">
+                            不要になった記録は、いったんゴミ箱に移せます。
+                        </div>
+                        <button id="btn-detail-trash" class="btn btn-secondary btn-block" style="color: var(--error);">ゴミ箱に移す</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- View: Settings (設定画面: キーワード・バックアップ統合) -->
+            <!-- ========================================== -->
+            <section id="view-settings" class="view hidden">
+                <div class="card mb-4">
+                    <p class="text-sub" style="font-size: 0.95rem;">入力のヒントになる言葉を整えたり、データをバックアップしたりできます。使いやすい形に少しずつ整えていきましょう。</p>
+                </div>
+
+                <div class="mt-2 text-sub" id="app-version-line">
+                    バージョン: <span id="app-version-text">-</span>
+                </div>
+
+                <div class="card mb-4" style="padding: 0; overflow: hidden;">
+                    <button class="settings-toggle-btn" aria-expanded="true" aria-controls="settings-keywords">
+                        <div>
+                            <h2 class="toggle-title" style="font-size: 1.1rem; margin-bottom: 0.2rem;">キーワード管理</h2>
+                            <span class="text-sub" style="font-size: 0.85rem; font-weight: normal;">入力のヒントになる言葉を整えます</span>
+                        </div>
+                        <span class="toggle-icon">▲</span>
+                    </button>
+                    <div id="settings-keywords" style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                        <div id="keywords-container">
+                            <!-- JSで生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <button class="settings-toggle-btn" aria-expanded="false" aria-controls="settings-data">
+                        <div>
+                            <h2 class="toggle-title" style="font-size: 1.1rem; margin-bottom: 0.2rem;">データ管理</h2>
+                            <span class="text-sub" style="font-size: 0.85rem; font-weight: normal;">バックアップと復元を行います</span>
+                        </div>
+                        <span class="toggle-icon">▼</span>
+                    </button>
+                    <div id="settings-data" class="hidden" style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                        <p class="text-sub mb-4" style="text-align: left;">
+                            アプリのデータはブラウザの中に保存されています。端末の変更や万が一のデータ消失に備えて、定期的にファイル（JSON形式）として書き出して保存することをお勧めします。
+                        </p>
+                        <button id="btn-export" class="btn btn-primary btn-block mb-4">データをファイルに書き出す（バックアップ）</button>
+
+                        <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+                        <h3 class="mb-4" style="font-size: 1rem;">データの復元（読み込み）</h3>
+                        <p class="text-sub mb-4" style="text-align: left;">
+                            書き出したファイルを読み込みます。既存のデータに追加されます。（※同じ記録IDがある場合は上書きされます）
+                        </p>
+                        <input type="file" id="input-import" accept=".json" class="hidden">
+                        <button id="btn-import-trigger" class="btn btn-secondary btn-block mb-4">ファイルを選択して読み込む</button>
+
+                        <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+                        <h3 class="mb-4" style="font-size: 1rem; color: var(--text-main);">アプリの初期化</h3>
+                        <p class="text-sub mb-4" style="text-align: left;">
+                            すべての記録と設定を初期状態に戻します。必要なものは先にバックアップしてください。
+                        </p>
+                        <button id="btn-init-trigger" class="btn btn-secondary btn-block" style="color: var(--error);">アプリを初期化する</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- View: Trash (ゴミ箱) -->
+            <!-- ========================================== -->
+            <section id="view-trash" class="view hidden">
+                <div class="card">
+                    <p class="text-sub mb-4">ゴミ箱に移した記録は、ここから元に戻せます。<br>不要になった場合は、ここから完全に削除できます。</p>
+                    <div id="trash-container">
+                        <!-- JSで生成 -->
+                    </div>
+                    <div id="trash-empty" class="text-center text-sub hidden" style="padding: 2rem 0;">
+                        ゴミ箱に入っている記録はありません。
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Support Export Options Dialog -->
+        <div id="dialog-support-export" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem;">
+            <div class="card" style="width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; margin-bottom: 0; position: relative;">
+                <button id="btn-close-export" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-sub); line-height: 1; padding: 0.25rem;">&times;</button>
+
+                <h3 class="mb-2" style="font-size: 1.1rem; padding-right: 2rem;" id="export-modal-title">支援用に書き出す</h3>
+                <p class="text-sub mb-4" style="font-size: 0.9rem;" id="export-modal-count-text"></p>
+
+                <div style="background: var(--bg-color); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border);">
+                    <strong class="text-sub" style="font-size: 0.85rem; display: block; margin-bottom: 0.75rem; color: var(--primary);">STEP 1. 出力する項目を選ぶ</strong>
+                    <div id="export-options" class="flex" style="flex-direction: column; gap: 0.75rem;">
+                        <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-title" checked style="width:1.2rem; height:1.2rem;"> タイトル・日付</label>
+                        <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-fact" checked style="width:1.2rem; height:1.2rem;"> 実際に起きたこと</label>
+                        <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-signs" checked style="width:1.2rem; height:1.2rem;"> 前兆</label>
+                        <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-notice" checked style="width:1.2rem; height:1.2rem;"> よく出る通知</label>
+                        <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-resources" checked style="width:1.2rem; height:1.2rem;"> 使える資源</label>
+                        <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-direction" checked style="width:1.2rem; height:1.2rem;"> 行動指針</label>
+                        <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-nextStep" checked style="width:1.2rem; height:1.2rem;"> 次の一手・二手目</label>
+                        <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-review" style="width:1.2rem; height:1.2rem;"> ふり返りメモ</label>
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-color); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border);">
+                    <strong class="text-sub" style="font-size: 0.85rem; display: block; margin-bottom: 0.5rem; color: var(--primary);">STEP 2. 共有前の確認</strong>
+                    <p style="font-size: 0.9rem; margin: 0; color: var(--text-main);">
+                        共有前に、出したくない内容や機微な個人情報が含まれていないか確認してください。
+                    </p>
+                </div>
+
+                <div class="flex gap-4">
+                    <button id="btn-exec-support-export" class="btn btn-primary" style="flex: 2;">ファイルに保存する</button>
+                    <button id="btn-cancel-support-export" class="btn btn-secondary" style="flex: 1;">キャンセル</button>
+                </div>
             </div>
-          </div>
+        </div>
 
-          <div class="mt-4 pt-4" style="border-top: 1px solid var(--border);">
-            <div class="mb-2 text-center text-sub" style="font-size: 0.85rem;">
-              不要になった記録は、いったんゴミ箱に移せます。
+        <!-- Unsaved Changes Dialog -->
+        <div id="dialog-unsaved" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem;">
+            <div class="card" style="width: 100%; max-width: 400px; margin-bottom: 0;">
+                <h3 class="mb-4" style="font-size: 1.1rem; color: var(--error);">まだ保存していない変更があります</h3>
+                <p class="text-sub mb-4">このまま移動すると、入力した内容は保存されません。どうしますか？</p>
+                <div class="flex gap-4" style="flex-direction: column;">
+                    <button id="btn-unsaved-leave" class="btn btn-secondary btn-block">そのまま移動する</button>
+                    <button id="btn-unsaved-stay" class="btn btn-primary btn-block">記録に戻る</button>
+                </div>
             </div>
-            <button id="btn-detail-trash" class="btn btn-secondary btn-block" style="color: var(--error);">ゴミ箱に移す</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- View: Settings (設定画面: キーワード・バックアップ統合) -->
-      <!-- ========================================== -->
-      <section id="view-settings" class="view hidden">
-        <div class="card mb-4">
-          <p class="text-sub" style="font-size: 0.95rem;">入力のヒントになる言葉を整えたり、データをバックアップしたりできます。使いやすい形に少しずつ整えていきましょう。</p>
         </div>
 
-        <div class="mt-2 text-sub" id="app-version-line">
-          バージョン: <span id="app-version-text">-</span>
-        </div>
+        <!-- Initialize App Dialog -->
+        <div id="dialog-initialize" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem;">
+            <div class="card" style="width: 100%; max-width: 400px; margin-bottom: 0; position: relative;">
+                <button id="btn-close-init" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-sub); line-height: 1; padding: 0.25rem;">&times;</button>
 
-        <div class="card mb-4" style="padding: 0; overflow: hidden;">
-          <button class="settings-toggle-btn" aria-expanded="true" aria-controls="settings-keywords">
-            <div>
-              <h2 class="toggle-title" style="font-size: 1.1rem; margin-bottom: 0.2rem;">キーワード管理</h2>
-              <span class="text-sub" style="font-size: 0.85rem; font-weight: normal;">入力のヒントになる言葉を整えます</span>
+                <h3 class="mb-4" style="font-size: 1.1rem; color: var(--error); padding-right: 2rem;">アプリを初期化する</h3>
+
+                <p style="font-size: 0.9rem; margin-bottom: 1rem;">
+                    この操作を行うと、記録・ゴミ箱・キーワード・設定を含むアプリ内データが初期状態に戻ります。<br>
+                    必要なものは先にバックアップしてください。
+                </p>
+
+                <button id="btn-init-backup" class="btn btn-secondary btn-block mb-4" style="font-size: 0.9rem; padding: 0.5rem;">先にバックアップする</button>
+
+                <div style="background-color: var(--bg-color); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border);">
+                    <label class="form-label mb-2" for="input-init-confirm" style="font-size: 0.9rem;">続けるには「すべて削除」と入力してください。</label>
+                    <input type="text" id="input-init-confirm" class="form-control" placeholder="すべて削除" autocomplete="off">
+                </div>
+
+                <div class="flex gap-4">
+                    <button id="btn-exec-init" class="btn" style="flex: 2; background-color: var(--surface); color: var(--error); border: 1px solid var(--error);" disabled>初期化する</button>
+                    <button id="btn-cancel-init" class="btn btn-secondary" style="flex: 1;">キャンセル</button>
+                </div>
             </div>
-            <span class="toggle-icon">▲</span>
-          </button>
-          <div id="settings-keywords" style="padding: 0 1.5rem 1.5rem 1.5rem;">
-            <div id="keywords-container">
-               <!-- JSで生成 -->
-            </div>
-          </div>
         </div>
 
-        <div class="card" style="padding: 0; overflow: hidden;">
-          <button class="settings-toggle-btn" aria-expanded="false" aria-controls="settings-data">
-            <div>
-              <h2 class="toggle-title" style="font-size: 1.1rem; margin-bottom: 0.2rem;">データ管理</h2>
-              <span class="text-sub" style="font-size: 0.85rem; font-weight: normal;">バックアップと復元を行います</span>
-            </div>
-            <span class="toggle-icon">▼</span>
-          </button>
-          <div id="settings-data" class="hidden" style="padding: 0 1.5rem 1.5rem 1.5rem;">
-            <p class="text-sub mb-4" style="text-align: left;">
-              アプリのデータはブラウザの中に保存されています。端末の変更や万が一のデータ消失に備えて、定期的にファイル（JSON形式）として書き出して保存することをお勧めします。
-            </p>
-            <button id="btn-export" class="btn btn-primary btn-block mb-4">データをファイルに書き出す（バックアップ）</button>
-            
-            <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
-            
-            <h3 class="mb-4" style="font-size: 1rem;">データの復元（読み込み）</h3>
-            <p class="text-sub mb-4" style="text-align: left;">
-              書き出したファイルを読み込みます。既存のデータに追加されます。（※同じ記録IDがある場合は上書きされます）
-            </p>
-            <input type="file" id="input-import" accept=".json" class="hidden">
-            <button id="btn-import-trigger" class="btn btn-secondary btn-block mb-4">ファイルを選択して読み込む</button>
-            
-            <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
-            
-            <h3 class="mb-4" style="font-size: 1rem; color: var(--text-main);">アプリの初期化</h3>
-            <p class="text-sub mb-4" style="text-align: left;">
-              すべての記録と設定を初期状態に戻します。必要なものは先にバックアップしてください。
-            </p>
-            <button id="btn-init-trigger" class="btn btn-secondary btn-block" style="color: var(--error);">アプリを初期化する</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- View: Trash (ゴミ箱) -->
-      <!-- ========================================== -->
-      <section id="view-trash" class="view hidden">
-        <div class="card">
-          <p class="text-sub mb-4">ゴミ箱に移した記録は、ここから元に戻せます。<br>不要になった場合は、ここから完全に削除できます。</p>
-          <div id="trash-container">
-             <!-- JSで生成 -->
-          </div>
-          <div id="trash-empty" class="text-center text-sub hidden" style="padding: 2rem 0;">
-            ゴミ箱に入っている記録はありません。
-          </div>
-        </div>
-      </section>
-
-    </main>
-
-    <!-- Support Export Options Dialog -->
-    <div id="dialog-support-export" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem;">
-      <div class="card" style="width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; margin-bottom: 0; position: relative;">
-        <button id="btn-close-export" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-sub); line-height: 1; padding: 0.25rem;">&times;</button>
-        
-        <h3 class="mb-2" style="font-size: 1.1rem; padding-right: 2rem;" id="export-modal-title">支援用に書き出す</h3>
-        <p class="text-sub mb-4" style="font-size: 0.9rem;" id="export-modal-count-text"></p>
-        
-        <div style="background: var(--bg-color); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border);">
-           <strong class="text-sub" style="font-size: 0.85rem; display: block; margin-bottom: 0.75rem; color: var(--primary);">STEP 1. 出力する項目を選ぶ</strong>
-           <div id="export-options" class="flex" style="flex-direction: column; gap: 0.75rem;">
-             <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-title" checked style="width:1.2rem; height:1.2rem;"> タイトル・日付</label>
-             <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-fact" checked style="width:1.2rem; height:1.2rem;"> 実際に起きたこと</label>
-             <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-signs" checked style="width:1.2rem; height:1.2rem;"> 前兆</label>
-             <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-notice" checked style="width:1.2rem; height:1.2rem;"> よく出る通知</label>
-             <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-resources" checked style="width:1.2rem; height:1.2rem;"> 使える資源</label>
-             <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-direction" checked style="width:1.2rem; height:1.2rem;"> 行動指針</label>
-             <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-nextStep" checked style="width:1.2rem; height:1.2rem;"> 次の一手・二手目</label>
-             <label class="flex" style="align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" id="opt-review" style="width:1.2rem; height:1.2rem;"> ふり返りメモ</label>
-           </div>
-        </div>
-
-        <div style="background: var(--bg-color); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border);">
-           <strong class="text-sub" style="font-size: 0.85rem; display: block; margin-bottom: 0.5rem; color: var(--primary);">STEP 2. 共有前の確認</strong>
-           <p style="font-size: 0.9rem; margin: 0; color: var(--text-main);">
-             共有前に、出したくない内容や機微な個人情報が含まれていないか確認してください。
-           </p>
-        </div>
-
-        <div class="flex gap-4">
-           <button id="btn-exec-support-export" class="btn btn-primary" style="flex: 2;">ファイルに保存する</button>
-           <button id="btn-cancel-support-export" class="btn btn-secondary" style="flex: 1;">キャンセル</button>
-        </div>
-      </div>
+        <!-- Bottom Navigation -->
+        <nav class="app-nav" id="bottom-nav">
+            <a href="#record" class="nav-item active" data-nav="record">
+                <span>✍️</span>
+                記録
+            </a>
+            <a href="#list" class="nav-item" data-nav="list">
+                <span>📄</span>
+                一覧
+            </a>
+            <a href="#settings" class="nav-item" data-nav="settings">
+                <span>⚙️</span>
+                設定
+            </a>
+            <a href="#trash" class="nav-item" data-nav="trash">
+                <span>🗑️</span>
+                ゴミ箱
+            </a>
+        </nav>
     </div>
 
-    <!-- Unsaved Changes Dialog -->
-    <div id="dialog-unsaved" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem;">
-      <div class="card" style="width: 100%; max-width: 400px; margin-bottom: 0;">
-        <h3 class="mb-4" style="font-size: 1.1rem; color: var(--error);">まだ保存していない変更があります</h3>
-        <p class="text-sub mb-4">このまま移動すると、入力した内容は保存されません。どうしますか？</p>
-        <div class="flex gap-4" style="flex-direction: column;">
-           <button id="btn-unsaved-leave" class="btn btn-secondary btn-block">そのまま移動する</button>
-           <button id="btn-unsaved-stay" class="btn btn-primary btn-block">記録に戻る</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Initialize App Dialog -->
-    <div id="dialog-initialize" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem;">
-      <div class="card" style="width: 100%; max-width: 400px; margin-bottom: 0; position: relative;">
-        <button id="btn-close-init" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-sub); line-height: 1; padding: 0.25rem;">&times;</button>
-        
-        <h3 class="mb-4" style="font-size: 1.1rem; color: var(--error); padding-right: 2rem;">アプリを初期化する</h3>
-        
-        <p style="font-size: 0.9rem; margin-bottom: 1rem;">
-          この操作を行うと、記録・ゴミ箱・キーワード・設定を含むアプリ内データが初期状態に戻ります。<br>
-          必要なものは先にバックアップしてください。
-        </p>
-        
-        <button id="btn-init-backup" class="btn btn-secondary btn-block mb-4" style="font-size: 0.9rem; padding: 0.5rem;">先にバックアップする</button>
+    <script>
+        // ==========================================
+        // 1. Utilities (ヘルパー関数)
+        // ==========================================
 
-        <div style="background-color: var(--bg-color); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border);">
-          <label class="form-label mb-2" for="input-init-confirm" style="font-size: 0.9rem;">続けるには「すべて削除」と入力してください。</label>
-          <input type="text" id="input-init-confirm" class="form-control" placeholder="すべて削除" autocomplete="off">
-        </div>
+        const APP_VERSION = 'v1.0.1';
 
-        <div class="flex gap-4">
-           <button id="btn-exec-init" class="btn" style="flex: 2; background-color: var(--surface); color: var(--error); border: 1px solid var(--error);" disabled>初期化する</button>
-           <button id="btn-cancel-init" class="btn btn-secondary" style="flex: 1;">キャンセル</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <nav class="app-nav" id="bottom-nav">
-      <a href="#record" class="nav-item active" data-nav="record">
-        <span>✍️</span>
-        記録
-      </a>
-      <a href="#list" class="nav-item" data-nav="list">
-        <span>📄</span>
-        一覧
-      </a>
-      <a href="#settings" class="nav-item" data-nav="settings">
-        <span>⚙️</span>
-        設定
-      </a>
-      <a href="#trash" class="nav-item" data-nav="trash">
-        <span>🗑️</span>
-        ゴミ箱
-      </a>
-    </nav>
-  </div>
-
-  <script>
-    // ==========================================
-    // 1. Utilities (ヘルパー関数)
-    // ==========================================
-
-    const APP_VERSION = 'v1.0.0';
-    
-    function generateId() {
-      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-        return crypto.randomUUID();
-      }
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
-    }
-
-    function el(tag, attributes = {}, ...children) {
-      const element = document.createElement(tag);
-      for (const [key, value] of Object.entries(attributes)) {
-        if (key === 'className') element.className = value;
-        else if (key.startsWith('on') && typeof value === 'function') {
-          element.addEventListener(key.substring(2).toLowerCase(), value);
-        }
-        else if (typeof value === 'boolean') {
-          if (value) element.setAttribute(key, '');
-        }
-        else element.setAttribute(key, value);
-      }
-      for (const child of children) {
-        if (child === null || child === undefined) continue;
-        if (typeof child === 'string' || typeof child === 'number') {
-          element.appendChild(document.createTextNode(child));
-        } else if (child instanceof Node) {
-          element.appendChild(child);
-        }
-      }
-      return element;
-    }
-
-    function clearChildren(element) {
-      while (element.firstChild) {
-        element.removeChild(element.firstChild);
-      }
-    }
-
-    function showMessage(text, isError = false) {
-      const box = document.getElementById('message-box');
-      box.textContent = text;
-      if (isError) box.classList.add('error');
-      else box.classList.remove('error');
-      
-      box.classList.add('show');
-      setTimeout(() => {
-        box.classList.remove('show');
-      }, 3000);
-    }
-
-    function formatDate(isoString) {
-      if (!isoString) return '';
-      const d = new Date(isoString);
-      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-    }
-
-    // ==========================================
-    // 2. Database Layer (IndexedDB)
-    // ==========================================
-    const DB_NAME = 'restartMemoDB';
-    const DB_VERSION = 1;
-    let dbInstance = null;
-
-    const initialKeywordGroups = [
-      { id: 'g1', name: '前兆', sortOrder: 1, isSystem: true, schemaVersion: 1 },
-      { id: 'g2', name: '使える資源', sortOrder: 2, isSystem: true, schemaVersion: 1 },
-      { id: 'g3', name: '行動指針', sortOrder: 3, isSystem: true, schemaVersion: 1 },
-      { id: 'g4', name: 'よく出る通知', sortOrder: 4, isSystem: true, schemaVersion: 1 },
-      { id: 'g5', name: '小さい一手', sortOrder: 5, isSystem: true, schemaVersion: 1 }
-    ];
-
-    const initialKeywordsData = [
-      { id: 'k1_1', groupId: 'g1', label: '眠れなかった', sortOrder: 1 },
-      { id: 'k1_2', groupId: 'g1', label: '朝から体が重い', sortOrder: 2 },
-      { id: 'k1_3', groupId: 'g1', label: '頭がまとまらない', sortOrder: 3 },
-      { id: 'k1_4', groupId: 'g1', label: '不安が強い', sortOrder: 4 },
-      { id: 'k1_5', groupId: 'g1', label: '連絡のことを考えると固まる', sortOrder: 5 },
-      
-      { id: 'k2_1', groupId: 'g2', label: '事業所の職員さん', sortOrder: 1 },
-      { id: 'k2_2', groupId: 'g2', label: '家族に一言伝える', sortOrder: 2 },
-      { id: 'k2_3', groupId: 'g2', label: 'アラームアプリ', sortOrder: 3 },
-      { id: 'k2_4', groupId: 'g2', label: 'メモを見る', sortOrder: 4 },
-      { id: 'k2_5', groupId: 'g2', label: '休める場所に移動する', sortOrder: 5 },
-      
-      { id: 'k3_1', groupId: 'g3', label: '自分を追い込みすぎない', sortOrder: 1 },
-      { id: 'k3_2', groupId: 'g3', label: '相手への配慮を忘れない', sortOrder: 2 },
-      { id: 'k3_3', groupId: 'g3', label: '一人で抱え込まない', sortOrder: 3 },
-      { id: 'k3_4', groupId: 'g3', label: 'できる範囲で小さく動く', sortOrder: 4 },
-      { id: 'k3_5', groupId: 'g3', label: '落ち着かなさがあっても、一つずつ確かめる', sortOrder: 5 },
-      
-      { id: 'k4_1', groupId: 'g4', label: 'ちゃんとしないとだめだ', sortOrder: 1 },
-      { id: 'k4_2', groupId: 'g4', label: '迷惑をかけてはいけない', sortOrder: 2 },
-      { id: 'k4_3', groupId: 'g4', label: '今さら連絡しづらい', sortOrder: 3 },
-      { id: 'k4_4', groupId: 'g4', label: 'うまく言えない', sortOrder: 4 },
-      { id: 'k4_5', groupId: 'g4', label: 'もう手遅れかもしれない', sortOrder: 5 },
-      
-      { id: 'k5_1', groupId: 'g5', label: '遅れそうだと気づいたら、一報を入れる', sortOrder: 1 },
-      { id: 'k5_2', groupId: 'g5', label: 'まず状況だけ短く伝える', sortOrder: 2 },
-      { id: 'k5_3', groupId: 'g5', label: '連絡文を一行だけ書く', sortOrder: 3 },
-      { id: 'k5_4', groupId: 'g5', label: '時間だけ確認する', sortOrder: 4 },
-      { id: 'k5_5', groupId: 'g5', label: '相談できる人の名前を見る', sortOrder: 5 }
-    ];
-
-    const db = {
-      open() {
-        return new Promise((resolve, reject) => {
-          if (dbInstance) return resolve(dbInstance);
-          const req = indexedDB.open(DB_NAME, DB_VERSION);
-          
-          req.onupgradeneeded = (e) => {
-            const idb = e.target.result;
-            const stores = ['app_meta', 'settings', 'entries', 'keyword_groups', 'keywords', 'drafts', 'trash', 'export_history'];
-            stores.forEach(name => {
-              if (!idb.objectStoreNames.contains(name)) {
-                idb.createObjectStore(name, { keyPath: 'id' });
-              }
+        function generateId() {
+            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                return crypto.randomUUID();
+            }
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
             });
-            
-            req.transaction.oncomplete = () => {
-              const tx = idb.transaction('keyword_groups', 'readwrite');
-              const store = tx.objectStore('keyword_groups');
-              const now = new Date().toISOString();
-              initialKeywordGroups.forEach(g => {
-                store.put({ ...g, createdAt: now, updatedAt: now });
-              });
-            };
-          };
-
-          req.onsuccess = () => {
-            dbInstance = req.result;
-            resolve(dbInstance);
-          };
-          req.onerror = () => reject(req.error);
-        });
-      },
-
-      async get(storeName, id) {
-        const idb = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = idb.transaction(storeName, 'readonly');
-          const req = tx.objectStore(storeName).get(id);
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => reject(req.error);
-        });
-      },
-
-      async getAll(storeName) {
-        const idb = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = idb.transaction(storeName, 'readonly');
-          const req = tx.objectStore(storeName).getAll();
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => reject(req.error);
-        });
-      },
-
-      async put(storeName, data) {
-        const idb = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = idb.transaction(storeName, 'readwrite');
-          const req = tx.objectStore(storeName).put(data);
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => reject(req.error);
-        });
-      },
-
-      async delete(storeName, id) {
-        const idb = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = idb.transaction(storeName, 'readwrite');
-          const req = tx.objectStore(storeName).delete(id);
-          req.onsuccess = () => resolve(true);
-          req.onerror = () => reject(req.error);
-        });
-      },
-
-      async clear(storeName) {
-        const idb = await this.open();
-        return new Promise((resolve, reject) => {
-          const tx = idb.transaction(storeName, 'readwrite');
-          const req = tx.objectStore(storeName).clear();
-          req.onsuccess = () => resolve(true);
-          req.onerror = () => reject(req.error);
-        });
-      }
-    };
-
-    // ==========================================
-    // 3. Application State & Router
-    // ==========================================
-    let currentEditId = null;
-    let pendingNavigationAction = null;
-
-    const App = {
-      async init() {
-        try {
-          await db.open();
-
-          const currentKeywords = await db.getAll('keywords');
-          if (currentKeywords.length === 0) {
-            const now = new Date().toISOString();
-            for (const k of initialKeywordsData) {
-              await db.put('keywords', {
-                ...k,
-                isSystem: true,
-                createdAt: now,
-                updatedAt: now,
-                schemaVersion: 1
-              });
-            }
-          }
-
-          const meta = await db.get('app_meta', 'guide_seen');
-          
-          window.addEventListener('hashchange', this.handleRoute.bind(this));
-          this.setupGlobalEvents();
-
-          if (!meta) {
-            window.location.hash = '#guide';
-          } else {
-            // 初期表示・通常起動時を「記録」へ変更
-            if (!window.location.hash || window.location.hash === '#guide' || window.location.hash === '#home') {
-              window.location.hash = '#record';
-            } else {
-              this.handleRoute();
-            }
-          }
-        } catch (error) {
-          console.error("DB Initialization failed:", error);
-          showMessage("データの読み込みに失敗しました。プライベートブラウズモード等でないかご確認ください。", true);
-        }
-      },
-
-      handleRoute() {
-        const hash = window.location.hash || '#record';
-        const parts = hash.split('/');
-        const path = parts[0];
-        const param = parts[1];
-
-        // ルーティング切り替え時に、レコード画面以外ならヘルパーの状態と未保存状態を初期化
-        if (path !== '#record') {
-           Views.Record.helperStates = {};
-           Views.Record.setInitialState(); // 未保存警告を防ぐためリセット
         }
 
-        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-        const btnBack = document.getElementById('btn-back');
-        const headerTitle = document.getElementById('header-title');
-        
-        btnBack.classList.add('hidden');
-        btnBack.onclick = () => window.history.back();
+        function el(tag, attributes = {}, ...children) {
+            const element = document.createElement(tag);
+            for (const [key, value] of Object.entries(attributes)) {
+                if (key === 'className') element.className = value;
+                else if (key.startsWith('on') && typeof value === 'function') {
+                    element.addEventListener(key.substring(2).toLowerCase(), value);
+                }
+                else if (typeof value === 'boolean') {
+                    if (value) element.setAttribute(key, '');
+                }
+                else element.setAttribute(key, value);
+            }
+            for (const child of children) {
+                if (child === null || child === undefined) continue;
+                if (typeof child === 'string' || typeof child === 'number') {
+                    element.appendChild(document.createTextNode(child));
+                } else if (child instanceof Node) {
+                    element.appendChild(child);
+                }
+            }
+            return element;
+        }
 
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        const navMap = { 
-          '#record': 'record', '#list': 'list', '#detail': 'list', 
-          '#settings': 'settings', '#trash': 'trash' 
+        function clearChildren(element) {
+            while (element.firstChild) {
+                element.removeChild(element.firstChild);
+            }
+        }
+
+        function showMessage(text, isError = false) {
+            const box = document.getElementById('message-box');
+            box.textContent = text;
+            if (isError) box.classList.add('error');
+            else box.classList.remove('error');
+
+            box.classList.add('show');
+            setTimeout(() => {
+                box.classList.remove('show');
+            }, 3000);
+        }
+
+        function formatDate(isoString) {
+            if (!isoString) return '';
+            const d = new Date(isoString);
+            return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+
+        // ==========================================
+        // 2. Database Layer (IndexedDB)
+        // ==========================================
+        const DB_NAME = 'restartMemoDB';
+        const DB_VERSION = 1;
+        let dbInstance = null;
+
+        const initialKeywordGroups = [
+            { id: 'g1', name: '前兆', sortOrder: 1, isSystem: true, schemaVersion: 1 },
+            { id: 'g2', name: '使える資源', sortOrder: 2, isSystem: true, schemaVersion: 1 },
+            { id: 'g3', name: '行動指針', sortOrder: 3, isSystem: true, schemaVersion: 1 },
+            { id: 'g4', name: 'よく出る通知', sortOrder: 4, isSystem: true, schemaVersion: 1 },
+            { id: 'g5', name: '小さい一手', sortOrder: 5, isSystem: true, schemaVersion: 1 }
+        ];
+
+        const initialKeywordsData = [
+            { id: 'k1_1', groupId: 'g1', label: '眠れなかった', sortOrder: 1 },
+            { id: 'k1_2', groupId: 'g1', label: '朝から体が重い', sortOrder: 2 },
+            { id: 'k1_3', groupId: 'g1', label: '頭がまとまらない', sortOrder: 3 },
+            { id: 'k1_4', groupId: 'g1', label: '不安が強い', sortOrder: 4 },
+            { id: 'k1_5', groupId: 'g1', label: '連絡のことを考えると固まる', sortOrder: 5 },
+
+            { id: 'k2_1', groupId: 'g2', label: '事業所の職員さん', sortOrder: 1 },
+            { id: 'k2_2', groupId: 'g2', label: '家族に一言伝える', sortOrder: 2 },
+            { id: 'k2_3', groupId: 'g2', label: 'アラームアプリ', sortOrder: 3 },
+            { id: 'k2_4', groupId: 'g2', label: 'メモを見る', sortOrder: 4 },
+            { id: 'k2_5', groupId: 'g2', label: '休める場所に移動する', sortOrder: 5 },
+
+            { id: 'k3_1', groupId: 'g3', label: '自分を追い込みすぎない', sortOrder: 1 },
+            { id: 'k3_2', groupId: 'g3', label: '相手への配慮を忘れない', sortOrder: 2 },
+            { id: 'k3_3', groupId: 'g3', label: '一人で抱え込まない', sortOrder: 3 },
+            { id: 'k3_4', groupId: 'g3', label: 'できる範囲で小さく動く', sortOrder: 4 },
+            { id: 'k3_5', groupId: 'g3', label: '落ち着かなさがあっても、一つずつ確かめる', sortOrder: 5 },
+
+            { id: 'k4_1', groupId: 'g4', label: 'ちゃんとしないとだめだ', sortOrder: 1 },
+            { id: 'k4_2', groupId: 'g4', label: '迷惑をかけてはいけない', sortOrder: 2 },
+            { id: 'k4_3', groupId: 'g4', label: '今さら連絡しづらい', sortOrder: 3 },
+            { id: 'k4_4', groupId: 'g4', label: 'うまく言えない', sortOrder: 4 },
+            { id: 'k4_5', groupId: 'g4', label: 'もう手遅れかもしれない', sortOrder: 5 },
+
+            { id: 'k5_1', groupId: 'g5', label: '遅れそうだと気づいたら、一報を入れる', sortOrder: 1 },
+            { id: 'k5_2', groupId: 'g5', label: 'まず状況だけ短く伝える', sortOrder: 2 },
+            { id: 'k5_3', groupId: 'g5', label: '連絡文を一行だけ書く', sortOrder: 3 },
+            { id: 'k5_4', groupId: 'g5', label: '時間だけ確認する', sortOrder: 4 },
+            { id: 'k5_5', groupId: 'g5', label: '相談できる人の名前を見る', sortOrder: 5 }
+        ];
+
+        const db = {
+            open() {
+                return new Promise((resolve, reject) => {
+                    if (dbInstance) return resolve(dbInstance);
+                    const req = indexedDB.open(DB_NAME, DB_VERSION);
+
+                    req.onupgradeneeded = (e) => {
+                        const idb = e.target.result;
+                        const stores = ['app_meta', 'settings', 'entries', 'keyword_groups', 'keywords', 'drafts', 'trash', 'export_history'];
+                        stores.forEach(name => {
+                            if (!idb.objectStoreNames.contains(name)) {
+                                idb.createObjectStore(name, { keyPath: 'id' });
+                            }
+                        });
+
+                        req.transaction.oncomplete = () => {
+                            const tx = idb.transaction('keyword_groups', 'readwrite');
+                            const store = tx.objectStore('keyword_groups');
+                            const now = new Date().toISOString();
+                            initialKeywordGroups.forEach(g => {
+                                store.put({ ...g, createdAt: now, updatedAt: now });
+                            });
+                        };
+                    };
+
+                    req.onsuccess = () => {
+                        dbInstance = req.result;
+                        resolve(dbInstance);
+                    };
+                    req.onerror = () => reject(req.error);
+                });
+            },
+
+            async get(storeName, id) {
+                const idb = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = idb.transaction(storeName, 'readonly');
+                    const req = tx.objectStore(storeName).get(id);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            },
+
+            async getAll(storeName) {
+                const idb = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = idb.transaction(storeName, 'readonly');
+                    const req = tx.objectStore(storeName).getAll();
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            },
+
+            async put(storeName, data) {
+                const idb = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = idb.transaction(storeName, 'readwrite');
+                    const req = tx.objectStore(storeName).put(data);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            },
+
+            async delete(storeName, id) {
+                const idb = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = idb.transaction(storeName, 'readwrite');
+                    const req = tx.objectStore(storeName).delete(id);
+                    req.onsuccess = () => resolve(true);
+                    req.onerror = () => reject(req.error);
+                });
+            },
+
+            async clear(storeName) {
+                const idb = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = idb.transaction(storeName, 'readwrite');
+                    const req = tx.objectStore(storeName).clear();
+                    req.onsuccess = () => resolve(true);
+                    req.onerror = () => reject(req.error);
+                });
+            }
         };
-        if (navMap[path]) {
-          const navItem = document.querySelector(`.nav-item[data-nav="${navMap[path]}"]`);
-          if (navItem) navItem.classList.add('active');
-        }
 
-        // バッジ制御：デフォルト非表示、Record内でのみ必要に応じ表示
-        document.getElementById('record-dirty-badge').classList.add('hidden');
+        // ==========================================
+        // 3. Application State & Router
+        // ==========================================
+        let currentEditId = null;
+        let pendingNavigationAction = null;
 
-        switch (path) {
-          case '#guide':
-            document.getElementById('view-guide').classList.remove('hidden');
-            headerTitle.childNodes[0].nodeValue = 'はじめに ';
-            document.getElementById('bottom-nav').classList.add('hidden');
-            break;
-            
-          case '#record':
-            document.getElementById('view-record').classList.remove('hidden');
-            document.getElementById('bottom-nav').classList.remove('hidden');
-            btnBack.classList.add('hidden');
-            
-            Views.Record.setupHelpers();
+        const App = {
+            async init() {
+                try {
+                    await db.open();
 
-            if (param) {
-              if (currentEditId !== param) Views.Record.helperStates = {};
-              currentEditId = param;
-              headerTitle.childNodes[0].nodeValue = '記録の編集 ';
-              Views.Record.load(param);
-            } else {
-              if (currentEditId !== null) Views.Record.helperStates = {};
-              currentEditId = null;
-              headerTitle.childNodes[0].nodeValue = '新しい記録 ';
-              Views.Record.resetForm();
-            }
-            break;
-            
-          case '#list':
-            document.getElementById('view-list').classList.remove('hidden');
-            headerTitle.childNodes[0].nodeValue = '記録一覧 ';
-            document.getElementById('bottom-nav').classList.remove('hidden');
-            Views.List.render();
-            break;
+                    const currentKeywords = await db.getAll('keywords');
+                    if (currentKeywords.length === 0) {
+                        const now = new Date().toISOString();
+                        for (const k of initialKeywordsData) {
+                            await db.put('keywords', {
+                                ...k,
+                                isSystem: true,
+                                createdAt: now,
+                                updatedAt: now,
+                                schemaVersion: 1
+                            });
+                        }
+                    }
 
-          case '#detail':
-            document.getElementById('view-detail').classList.remove('hidden');
-            headerTitle.childNodes[0].nodeValue = '記録の詳細 ';
-            btnBack.classList.remove('hidden');
-            document.getElementById('bottom-nav').classList.remove('hidden');
-            if (param) Views.Detail.render(param);
-            else window.location.hash = '#list';
-            break;
+                    const meta = await db.get('app_meta', 'guide_seen');
 
-          case '#settings':
-            document.getElementById('view-settings').classList.remove('hidden');
-            headerTitle.childNodes[0].nodeValue = '設定 ';
-            document.getElementById('bottom-nav').classList.remove('hidden');
-            Views.Settings.render();
-            break;
+                    window.addEventListener('hashchange', this.handleRoute.bind(this));
+                    this.setupGlobalEvents();
 
-          case '#trash':
-            document.getElementById('view-trash').classList.remove('hidden');
-            headerTitle.childNodes[0].nodeValue = 'ゴミ箱 ';
-            document.getElementById('bottom-nav').classList.remove('hidden');
-            Views.Trash.render();
-            break;
+                    if (!meta) {
+                        if (window.location.hash === '#guide') {
+                            this.handleRoute();
+                        } else {
+                            window.location.hash = '#guide';
+                        }
+                    } else {
+                        if (!window.location.hash || window.location.hash === '#guide' || window.location.hash === '#home') {
+                            if (window.location.hash === '#record') {
+                                this.handleRoute();
+                            } else {
+                                window.location.hash = '#record';
+                            }
+                        } else {
+                            this.handleRoute();
+                        }
+                    }
 
-          default:
-            window.location.hash = '#record';
-        }
-        
-        window.scrollTo(0, 0);
-      },
-
-      setupGlobalEvents() {
-        document.getElementById('btn-guide-start').addEventListener('click', async () => {
-          await db.put('app_meta', { id: 'guide_seen', value: true, updatedAt: new Date().toISOString() });
-          window.location.hash = '#record'; // 同意後は記録へ
-        });
-
-        // Record Actions
-        document.getElementById('btn-record-save').addEventListener('click', () => Views.Record.save());
-        
-        document.getElementById('btn-record-back-list').addEventListener('click', () => {
-          if (Views.Record.isDirty()) {
-            Views.Record.showUnsavedDialog(() => { window.location.hash = '#list'; });
-          } else {
-            window.location.hash = '#list';
-          }
-        });
-
-        document.getElementById('btn-record-cancel').addEventListener('click', () => {
-          if (Views.Record.isDirty()) {
-            Views.Record.showUnsavedDialog(() => {
-              if (currentEditId) {
-                window.location.hash = `#detail/${currentEditId}`;
-              } else {
-                Views.Record.resetForm();
-                window.scrollTo(0, 0);
-              }
-            });
-          } else {
-            if (currentEditId) {
-              window.location.hash = `#detail/${currentEditId}`;
-            } else {
-              Views.Record.resetForm();
-              window.scrollTo(0, 0);
-            }
-          }
-        });
-
-        // Bottom Navigation Intercept
-        document.querySelectorAll('.app-nav a').forEach(a => {
-          a.addEventListener('click', (e) => {
-            const targetHash = a.getAttribute('href');
-            if (window.location.hash.startsWith('#record') && Views.Record.isDirty() && targetHash !== '#record') {
-              e.preventDefault();
-              Views.Record.showUnsavedDialog(() => {
-                window.location.hash = targetHash;
-              });
-            }
-          });
-        });
-
-        // Unsaved Dialog
-        document.getElementById('btn-unsaved-stay').addEventListener('click', () => {
-          document.getElementById('dialog-unsaved').classList.add('hidden');
-          pendingNavigationAction = null;
-        });
-        document.getElementById('btn-unsaved-leave').addEventListener('click', () => {
-          document.getElementById('dialog-unsaved').classList.add('hidden');
-          if (pendingNavigationAction) {
-            pendingNavigationAction();
-            pendingNavigationAction = null;
-          }
-        });
-
-        // Export/Import (Backup)
-        document.getElementById('btn-export').addEventListener('click', () => Views.Backup.export());
-        document.getElementById('btn-import-trigger').addEventListener('click', () => {
-          document.getElementById('input-import').click();
-        });
-        document.getElementById('input-import').addEventListener('change', (e) => Views.Backup.import(e));
-
-        // Support Export Events
-        document.getElementById('btn-exec-support-export').addEventListener('click', () => Views.SupportExport.exec());
-        document.getElementById('btn-cancel-support-export').addEventListener('click', () => Views.SupportExport.close());
-        document.getElementById('btn-close-export').addEventListener('click', () => Views.SupportExport.close());
-        
-        const exportDialog = document.getElementById('dialog-support-export');
-        exportDialog.addEventListener('click', (e) => {
-          if (e.target === exportDialog) Views.SupportExport.close();
-        });
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && !exportDialog.classList.contains('hidden')) {
-            Views.SupportExport.close();
-          }
-        });
-        
-        // Init Dialog
-        document.getElementById('btn-init-trigger').addEventListener('click', () => Views.Initialize.show());
-        document.getElementById('btn-close-init').addEventListener('click', () => Views.Initialize.close());
-        document.getElementById('btn-cancel-init').addEventListener('click', () => Views.Initialize.close());
-        document.getElementById('btn-init-backup').addEventListener('click', () => {
-          Views.Initialize.close();
-          Views.Backup.export();
-        });
-        document.getElementById('input-init-confirm').addEventListener('input', (e) => {
-          const btn = document.getElementById('btn-exec-init');
-          if (e.target.value === 'すべて削除') {
-            btn.disabled = false;
-          } else {
-            btn.disabled = true;
-          }
-        });
-        document.getElementById('btn-exec-init').addEventListener('click', () => Views.Initialize.exec());
-
-        const initDialog = document.getElementById('dialog-initialize');
-        initDialog.addEventListener('click', (e) => {
-          if (e.target === initDialog) Views.Initialize.close();
-        });
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && !initDialog.classList.contains('hidden')) {
-            Views.Initialize.close();
-          }
-        });
-      }
-    };
-
-    // ==========================================
-    // 4. View Controllers
-    // ==========================================
-    const Views = {
-      
-      // --- 記録作成・編集画面 ---
-      Record: {
-        helperStates: {},
-        initialState: null,
-        isSetupInputs: false,
-
-        getVal(id) { return document.getElementById(id).value.trim(); },
-        getArray(id) { 
-          return this.getVal(id).split('\n').map(s => s.trim()).filter(Boolean); 
-        },
-        setVal(id, val) { document.getElementById(id).value = val || ''; },
-        setArray(id, arr) { document.getElementById(id).value = (arr || []).join('\n'); },
-
-        getFormState() {
-          return {
-            title: this.getVal('record-title'),
-            fact: this.getVal('record-fact'),
-            signs: this.getVal('record-signs'), // 比較用なので生文字列で十分
-            notice: this.getVal('record-notice'),
-            resources: this.getVal('record-resources'),
-            direction: this.getVal('record-direction'),
-            nextStep: this.getVal('record-nextStep'),
-            secondStep: this.getVal('record-secondStep'),
-            review: this.getVal('record-review')
-          };
-        },
-
-        setInitialState() {
-          this.initialState = this.getFormState();
-          this.updateDirtyUI();
-        },
-
-        isDirty() {
-          if (!this.initialState) return false;
-          return JSON.stringify(this.initialState) !== JSON.stringify(this.getFormState());
-        },
-
-        updateDirtyUI() {
-          const badge = document.getElementById('record-dirty-badge');
-          if (window.location.hash.startsWith('#record')) {
-            badge.classList.toggle('hidden', !this.isDirty());
-          }
-        },
-
-        showUnsavedDialog(action) {
-          pendingNavigationAction = action;
-          document.getElementById('dialog-unsaved').classList.remove('hidden');
-        },
-
-        resetForm() {
-          ['record-title', 'record-fact', 'record-signs', 'record-notice', 'record-resources', 
-           'record-direction', 'record-nextStep', 'record-secondStep', 'record-review'].forEach(id => {
-            document.getElementById(id).value = '';
-          });
-          this.setInitialState();
-        },
-
-        setupInputs() {
-          if (this.isSetupInputs) return;
-          document.querySelectorAll('.record-input').forEach(input => {
-            input.addEventListener('input', () => this.updateDirtyUI());
-          });
-          this.isSetupInputs = true;
-        },
-
-        async setupHelpers() {
-          this.setupInputs();
-          const keywords = await db.getAll('keywords');
-          const getKws = (gId) => keywords.filter(k => k.groupId === gId).sort((a,b) => a.sortOrder - b.sortOrder);
-
-          this.renderHelper('helper-signs', getKws('g1'), 'record-signs', '思いつくものがあれば押してみてください。そのまま使っても、少し変えても大丈夫です。');
-          this.renderHelper('helper-notice', getKws('g4'), 'record-notice', '頭に浮かびやすい言葉（切り分ける補助として置いています）');
-          this.renderHelper('helper-resources', getKws('g2'), 'record-resources', '思いつくものがあれば押してみてください。');
-          this.renderHelper('helper-direction', getKws('g3'), 'record-direction', '思いつくものがあれば押してみてください。');
-          this.renderHelper('helper-nextStep', getKws('g5'), 'record-nextStep', '思いつくものがあれば押してみてください。まずの一歩の下書きに使えます。');
-          this.renderHelper('helper-secondStep', getKws('g5'), 'record-secondStep', '一手目が難しいときの予備として使えます。必要なら押してみてください。');
-
-          this.setupToggleButtons();
-        },
-
-        renderHelper(containerId, keywords, targetFieldId, customTitle) {
-          const container = document.getElementById(containerId);
-          clearChildren(container);
-          
-          const btn = document.querySelector(`.btn-helper-toggle[data-target="${containerId}"]`);
-          
-          if (!keywords || keywords.length === 0) {
-            container.classList.add('hidden');
-            if (btn) btn.classList.add('hidden');
-            return;
-          }
-          
-          // 状態の復元
-          if (this.helperStates[containerId]) {
-            container.classList.remove('hidden');
-            if (btn) {
-              btn.classList.remove('hidden');
-              btn.textContent = 'キーワード ▲';
-              btn.setAttribute('aria-expanded', 'true');
-            }
-          } else {
-            container.classList.add('hidden');
-            if (btn) {
-              btn.classList.remove('hidden');
-              btn.textContent = 'キーワード ▼';
-              btn.setAttribute('aria-expanded', 'false');
-            }
-          }
-
-          const titleText = customTitle || '思いつくものがあれば押してみてください。そのまま使っても、言い換えても大丈夫です。';
-          container.appendChild(el('div', { className: 'helper-title' }, titleText));
-
-          const wrap = el('div', { className: 'keyword-chip-wrap' });
-          keywords.forEach(kw => {
-            wrap.appendChild(el('button', { 
-              type: 'button',
-              className: 'keyword-chip', 
-              onclick: (e) => {
-                e.preventDefault();
-                this.insertKeyword(targetFieldId, kw.label);
-              }
-            }, kw.label));
-          });
-          container.appendChild(wrap);
-        },
-
-        setupToggleButtons() {
-          document.querySelectorAll('.btn-helper-toggle').forEach(btn => {
-            btn.onclick = () => {
-              const targetId = btn.getAttribute('data-target');
-              const targetEl = document.getElementById(targetId);
-              
-              if (targetEl.classList.contains('hidden')) {
-                targetEl.classList.remove('hidden');
-                btn.textContent = 'キーワード ▲';
-                btn.setAttribute('aria-expanded', 'true');
-                this.helperStates[targetId] = true;
-              } else {
-                targetEl.classList.add('hidden');
-                btn.textContent = 'キーワード ▼';
-                btn.setAttribute('aria-expanded', 'false');
-                this.helperStates[targetId] = false;
-              }
-            };
-          });
-        },
-
-        insertKeyword(fieldId, keywordLabel) {
-          const fieldEl = document.getElementById(fieldId);
-          let currentVal = fieldEl.value.trim();
-          
-          const lines = currentVal.split('\n').map(l => l.trim());
-          if (lines.includes(keywordLabel)) {
-            showMessage('すでに入力されています');
-            return;
-          }
-
-          if (currentVal === '') {
-            currentVal = keywordLabel;
-          } else {
-            currentVal += '\n' + keywordLabel;
-          }
-          fieldEl.value = currentVal;
-          this.updateDirtyUI();
-          showMessage('入力欄に追加しました');
-        },
-
-        async load(id) {
-          const entry = await db.get('entries', id);
-          if (!entry) return showMessage('記録が見つかりません', true);
-          
-          this.setVal('record-title', entry.title);
-          this.setVal('record-fact', entry.fact);
-          this.setArray('record-signs', entry.signs);
-          this.setArray('record-notice', entry.notice);
-          this.setArray('record-resources', entry.resources);
-          this.setArray('record-direction', entry.direction);
-          this.setVal('record-nextStep', entry.nextStep);
-          this.setVal('record-secondStep', entry.secondStep);
-          this.setVal('record-review', entry.review);
-          
-          this.setInitialState();
-        },
-
-        async save() {
-          const title = this.getVal('record-title');
-          if (!title) {
-             showMessage('タイトルを入力して次に進みましょう', true);
-             document.getElementById('record-title').focus();
-             return;
-          }
-
-          const now = new Date().toISOString();
-          const isNew = !currentEditId;
-          const id = isNew ? generateId() : currentEditId;
-
-          let createdAt = now;
-          if (!isNew) {
-            const existing = await db.get('entries', id);
-            if (existing && existing.createdAt) createdAt = existing.createdAt;
-          }
-
-          const entry = {
-            id,
-            createdAt,
-            updatedAt: now,
-            title,
-            fact: this.getVal('record-fact'),
-            signs: Array.from(new Set(this.getArray('record-signs'))),
-            notice: Array.from(new Set(this.getArray('record-notice'))),
-            resources: Array.from(new Set(this.getArray('record-resources'))),
-            direction: Array.from(new Set(this.getArray('record-direction'))),
-            nextStep: this.getVal('record-nextStep'),
-            secondStep: this.getVal('record-secondStep'),
-            review: this.getVal('record-review'),
-            tags: [],
-            starred: false,
-            archived: false,
-            schemaVersion: 1
-          };
-
-          try {
-            await db.put('entries', entry);
-            showMessage('記録を保存しました');
-            this.setInitialState(); // 保存完了後は状態をクリアして同期
-            this.helperStates = {}; 
-            window.location.hash = `#detail/${id}`;
-          } catch (e) {
-            console.error(e);
-            showMessage('うまく記録できませんでした。時間をおいてお試しください。', true);
-          }
-        }
-      },
-
-      // --- 記録一覧画面 ---
-      List: {
-        isSelecting: false,
-        selectedIds: new Set(),
-
-        toggleSelectMode() {
-          this.isSelecting = !this.isSelecting;
-          this.selectedIds.clear();
-        },
-
-        async render() {
-          const actions = document.getElementById('list-actions');
-          const container = document.getElementById('list-container');
-          const emptyMsg = document.getElementById('list-empty');
-          clearChildren(actions);
-          clearChildren(container);
-
-          const entries = await db.getAll('entries');
-          
-          if (entries.length === 0) {
-            actions.classList.add('hidden');
-            emptyMsg.classList.remove('hidden');
-            this.isSelecting = false;
-            return;
-          }
-          
-          actions.classList.remove('hidden');
-          emptyMsg.classList.add('hidden');
-
-          // Header Actions
-          if (!this.isSelecting) {
-            actions.style.flexDirection = 'row';
-            actions.style.alignItems = 'center';
-            actions.style.padding = '0';
-            actions.style.backgroundColor = 'transparent';
-            actions.style.border = 'none';
-            
-            actions.appendChild(el('div', {})); // spacer
-            actions.appendChild(el('button', {
-              className: 'btn btn-secondary',
-              style: 'padding: 0.5rem 1rem; font-size: 0.9rem; min-height: auto;',
-              onclick: () => { this.toggleSelectMode(); this.render(); }
-            }, '📤 支援用に書き出す'));
-          } else {
-            actions.style.flexDirection = 'column';
-            actions.style.alignItems = 'stretch';
-            actions.style.padding = '1rem';
-            actions.style.backgroundColor = 'rgba(13, 148, 136, 0.05)';
-            actions.style.border = '1px solid rgba(13, 148, 136, 0.3)';
-            
-            const headerInfo = el('div', { className: 'mb-4' },
-              el('h3', { style: 'color: var(--primary); font-size: 1.1rem; margin-bottom: 0.25rem;' }, '支援用書き出しモード'),
-              el('p', { className: 'text-sub', style: 'font-size: 0.85rem; margin: 0;' }, '書き出したい記録を選んでください。')
-            );
-
-            const topRow = el('div', { className: 'flex justify-between mb-2', style: 'align-items: center;' },
-              el('span', { style: 'font-weight: bold; color: var(--primary);' }, `${this.selectedIds.size}件選択中`),
-              el('button', {
-                className: 'btn btn-text',
-                style: 'padding: 0;',
-                onclick: () => { this.selectedIds.clear(); this.render(); }
-              }, '選択解除')
-            );
-
-            const btnRow = el('div', { className: 'flex gap-2' },
-              el('button', {
-                className: 'btn btn-primary',
-                style: 'flex: 2; padding: 0.5rem; font-size: 0.9rem;',
-                disabled: this.selectedIds.size === 0,
-                onclick: () => {
-                  if (this.selectedIds.size === 0) return;
-                  const targetEntries = entries.filter(e => this.selectedIds.has(e.id));
-                  targetEntries.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-                  Views.SupportExport.show(targetEntries);
+                } catch (error) {
+                    console.error("DB Initialization failed:", error);
+                    showMessage("データの読み込みに失敗しました。プライベートブラウズモード等でないかご確認ください。", true);
                 }
-              }, '📤 書き出す'),
-              el('button', {
-                className: 'btn btn-secondary',
-                style: 'flex: 1; padding: 0.5rem; font-size: 0.9rem;',
-                onclick: () => { this.toggleSelectMode(); this.render(); }
-              }, 'やめる')
-            );
-            
-            actions.appendChild(headerInfo);
-            actions.appendChild(topRow);
-            actions.appendChild(btnRow);
-          }
+            },
 
-          entries.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+            handleRoute() {
+                const hash = window.location.hash || '#record';
+                const parts = hash.split('/');
+                const path = parts[0];
+                const param = parts[1];
 
-          entries.forEach(entry => {
-            if (!this.isSelecting) {
-              const item = el('a', { className: 'list-item', href: `#detail/${entry.id}` },
-                el('div', { className: 'list-item-title' }, entry.title),
-                el('div', { className: 'list-item-meta' }, formatDate(entry.updatedAt) + (entry.nextStep ? ' | 次の一手あり' : ''))
-              );
-              container.appendChild(item);
-            } else {
-              const isChecked = this.selectedIds.has(entry.id);
-              const itemStyle = `cursor: pointer; align-items: center; gap: 1rem; border-color: ${isChecked ? 'var(--primary)' : 'var(--border)'}; background-color: ${isChecked ? 'rgba(13, 148, 136, 0.05)' : 'var(--surface)'};`;
-              const item = el('div', {
-                className: 'list-item flex',
-                style: itemStyle,
-                onclick: () => {
-                  if (isChecked) this.selectedIds.delete(entry.id);
-                  else this.selectedIds.add(entry.id);
-                  this.render();
+                // ルーティング切り替え時に、レコード画面以外ならヘルパーの状態と未保存状態を初期化
+                if (path !== '#record') {
+                    Views.Record.helperStates = {};
+                    Views.Record.setInitialState(); // 未保存警告を防ぐためリセット
                 }
-              },
-                el('input', { type: 'checkbox', checked: isChecked, style: 'width: 1.2rem; height: 1.2rem; pointer-events: none;' }),
-                el('div', { style: 'flex: 1;' },
-                  el('div', { className: 'list-item-title' }, entry.title),
-                  el('div', { className: 'list-item-meta' }, formatDate(entry.updatedAt))
-                )
-              );
-              container.appendChild(item);
-            }
-          });
-        }
-      },
 
-      // --- 記録詳細画面 ---
-      Detail: {
-        async render(id) {
-          const entry = await db.get('entries', id);
-          if (!entry) {
-            showMessage('記録が見つかりません', true);
-            window.history.back();
-            return;
-          }
+                document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+                const btnBack = document.getElementById('btn-back');
+                const headerTitle = document.getElementById('header-title');
 
-          document.getElementById('detail-title').textContent = entry.title;
-          document.getElementById('detail-date').textContent = `作成: ${formatDate(entry.createdAt)} / 更新: ${formatDate(entry.updatedAt)}`;
-          document.getElementById('detail-fact').textContent = entry.fact || '（未入力）';
-          
-          const setList = (elementId, array) => {
-            const ul = document.getElementById(elementId);
-            clearChildren(ul);
-            if (!array || array.length === 0) {
-              ul.appendChild(el('li', { className: 'text-sub' }, '（未入力）'));
-            } else {
-              array.forEach(item => ul.appendChild(el('li', {}, item)));
-            }
-          };
+                btnBack.classList.add('hidden');
+                btnBack.onclick = () => window.history.back();
 
-          setList('detail-signs', entry.signs);
-          setList('detail-notice', entry.notice);
-          setList('detail-resources', entry.resources);
-          setList('detail-direction', entry.direction);
-
-          document.getElementById('detail-nextStep').textContent = entry.nextStep || '（未入力）';
-          document.getElementById('detail-secondStep').textContent = entry.secondStep || '（未入力）';
-
-          document.getElementById('btn-detail-export').onclick = () => {
-            Views.SupportExport.show([entry]);
-          };
-
-          document.getElementById('btn-detail-edit').onclick = () => {
-            window.location.hash = `#record/${entry.id}`;
-          };
-
-          document.getElementById('btn-detail-trash').onclick = async () => {
-            if (confirm('この記録をゴミ箱に移しますか？\nあとから復元できます。')) {
-              try {
-                const now = new Date().toISOString();
-                const trashItem = {
-                  ...entry,
-                  deletedAt: now,
-                  trashedFrom: 'entries'
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                const navMap = {
+                    '#record': 'record', '#list': 'list', '#detail': 'list',
+                    '#settings': 'settings', '#trash': 'trash'
                 };
-                
-                await db.put('trash', trashItem);
-                await db.delete('entries', entry.id);
-                
-                showMessage('記録をゴミ箱に移しました');
-                window.location.hash = '#list';
-              } catch (e) {
-                console.error(e);
-                showMessage('ゴミ箱への移動に失敗しました。', true);
-              }
+                if (navMap[path]) {
+                    const navItem = document.querySelector(`.nav-item[data-nav="${navMap[path]}"]`);
+                    if (navItem) navItem.classList.add('active');
+                }
+
+                // バッジ制御：デフォルト非表示、Record内でのみ必要に応じ表示
+                document.getElementById('record-dirty-badge').classList.add('hidden');
+
+                switch (path) {
+                    case '#guide':
+                        document.getElementById('view-guide').classList.remove('hidden');
+                        headerTitle.childNodes[0].nodeValue = 'はじめに ';
+                        document.getElementById('bottom-nav').classList.add('hidden');
+                        break;
+
+                    case '#record':
+                        document.getElementById('view-record').classList.remove('hidden');
+                        document.getElementById('bottom-nav').classList.remove('hidden');
+                        btnBack.classList.add('hidden');
+
+                        Views.Record.setupHelpers();
+
+                        if (param) {
+                            if (currentEditId !== param) Views.Record.helperStates = {};
+                            currentEditId = param;
+                            headerTitle.childNodes[0].nodeValue = '記録の編集 ';
+                            Views.Record.load(param);
+                        } else {
+                            if (currentEditId !== null) Views.Record.helperStates = {};
+                            currentEditId = null;
+                            headerTitle.childNodes[0].nodeValue = '新しい記録 ';
+                            Views.Record.resetForm();
+                        }
+                        break;
+
+                    case '#list':
+                        document.getElementById('view-list').classList.remove('hidden');
+                        headerTitle.childNodes[0].nodeValue = '記録一覧 ';
+                        document.getElementById('bottom-nav').classList.remove('hidden');
+                        Views.List.render();
+                        break;
+
+                    case '#detail':
+                        document.getElementById('view-detail').classList.remove('hidden');
+                        headerTitle.childNodes[0].nodeValue = '記録の詳細 ';
+                        btnBack.classList.remove('hidden');
+                        document.getElementById('bottom-nav').classList.remove('hidden');
+                        if (param) Views.Detail.render(param);
+                        else window.location.hash = '#list';
+                        break;
+
+                    case '#settings':
+                        document.getElementById('view-settings').classList.remove('hidden');
+                        headerTitle.childNodes[0].nodeValue = '設定 ';
+                        document.getElementById('bottom-nav').classList.remove('hidden');
+                        Views.Settings.render();
+                        break;
+
+                    case '#trash':
+                        document.getElementById('view-trash').classList.remove('hidden');
+                        headerTitle.childNodes[0].nodeValue = 'ゴミ箱 ';
+                        document.getElementById('bottom-nav').classList.remove('hidden');
+                        Views.Trash.render();
+                        break;
+
+                    default:
+                        window.location.hash = '#record';
+                }
+
+                window.scrollTo(0, 0);
+            },
+
+            setupGlobalEvents() {
+                document.getElementById('btn-guide-start').addEventListener('click', async () => {
+                    await db.put('app_meta', { id: 'guide_seen', value: true, updatedAt: new Date().toISOString() });
+                    window.location.hash = '#record'; // 同意後は記録へ
+                });
+
+                // Record Actions
+                document.getElementById('btn-record-save').addEventListener('click', () => Views.Record.save());
+
+                document.getElementById('btn-record-back-list').addEventListener('click', () => {
+                    if (Views.Record.isDirty()) {
+                        Views.Record.showUnsavedDialog(() => { window.location.hash = '#list'; });
+                    } else {
+                        window.location.hash = '#list';
+                    }
+                });
+
+                document.getElementById('btn-record-cancel').addEventListener('click', () => {
+                    if (Views.Record.isDirty()) {
+                        Views.Record.showUnsavedDialog(() => {
+                            if (currentEditId) {
+                                window.location.hash = `#detail/${currentEditId}`;
+                            } else {
+                                Views.Record.resetForm();
+                                window.scrollTo(0, 0);
+                            }
+                        });
+                    } else {
+                        if (currentEditId) {
+                            window.location.hash = `#detail/${currentEditId}`;
+                        } else {
+                            Views.Record.resetForm();
+                            window.scrollTo(0, 0);
+                        }
+                    }
+                });
+
+                // Bottom Navigation Intercept
+                document.querySelectorAll('.app-nav a').forEach(a => {
+                    a.addEventListener('click', (e) => {
+                        const targetHash = a.getAttribute('href');
+                        if (window.location.hash.startsWith('#record') && Views.Record.isDirty() && targetHash !== '#record') {
+                            e.preventDefault();
+                            Views.Record.showUnsavedDialog(() => {
+                                window.location.hash = targetHash;
+                            });
+                        }
+                    });
+                });
+
+                // Unsaved Dialog
+                document.getElementById('btn-unsaved-stay').addEventListener('click', () => {
+                    document.getElementById('dialog-unsaved').classList.add('hidden');
+                    pendingNavigationAction = null;
+                });
+                document.getElementById('btn-unsaved-leave').addEventListener('click', () => {
+                    document.getElementById('dialog-unsaved').classList.add('hidden');
+                    if (pendingNavigationAction) {
+                        pendingNavigationAction();
+                        pendingNavigationAction = null;
+                    }
+                });
+
+                // Export/Import (Backup)
+                document.getElementById('btn-export').addEventListener('click', () => Views.Backup.export());
+                document.getElementById('btn-import-trigger').addEventListener('click', () => {
+                    document.getElementById('input-import').click();
+                });
+                document.getElementById('input-import').addEventListener('change', (e) => Views.Backup.import(e));
+
+                // Support Export Events
+                document.getElementById('btn-exec-support-export').addEventListener('click', () => Views.SupportExport.exec());
+                document.getElementById('btn-cancel-support-export').addEventListener('click', () => Views.SupportExport.close());
+                document.getElementById('btn-close-export').addEventListener('click', () => Views.SupportExport.close());
+
+                const exportDialog = document.getElementById('dialog-support-export');
+                exportDialog.addEventListener('click', (e) => {
+                    if (e.target === exportDialog) Views.SupportExport.close();
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && !exportDialog.classList.contains('hidden')) {
+                        Views.SupportExport.close();
+                    }
+                });
+
+                // Init Dialog
+                document.getElementById('btn-init-trigger').addEventListener('click', () => Views.Initialize.show());
+                document.getElementById('btn-close-init').addEventListener('click', () => Views.Initialize.close());
+                document.getElementById('btn-cancel-init').addEventListener('click', () => Views.Initialize.close());
+                document.getElementById('btn-init-backup').addEventListener('click', () => {
+                    Views.Initialize.close();
+                    Views.Backup.export();
+                });
+                document.getElementById('input-init-confirm').addEventListener('input', (e) => {
+                    const btn = document.getElementById('btn-exec-init');
+                    if (e.target.value === 'すべて削除') {
+                        btn.disabled = false;
+                    } else {
+                        btn.disabled = true;
+                    }
+                });
+                document.getElementById('btn-exec-init').addEventListener('click', () => Views.Initialize.exec());
+
+                const initDialog = document.getElementById('dialog-initialize');
+                initDialog.addEventListener('click', (e) => {
+                    if (e.target === initDialog) Views.Initialize.close();
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && !initDialog.classList.contains('hidden')) {
+                        Views.Initialize.close();
+                    }
+                });
             }
-          };
+        };
+
+        // ==========================================
+        // 4. View Controllers
+        // ==========================================
+        const Views = {
+
+            // --- 記録作成・編集画面 ---
+            Record: {
+                helperStates: {},
+                initialState: null,
+                isSetupInputs: false,
+
+                getVal(id) { return document.getElementById(id).value.trim(); },
+                getArray(id) {
+                    return this.getVal(id).split('\n').map(s => s.trim()).filter(Boolean);
+                },
+                setVal(id, val) { document.getElementById(id).value = val || ''; },
+                setArray(id, arr) { document.getElementById(id).value = (arr || []).join('\n'); },
+
+                getFormState() {
+                    return {
+                        title: this.getVal('record-title'),
+                        fact: this.getVal('record-fact'),
+                        signs: this.getVal('record-signs'), // 比較用なので生文字列で十分
+                        notice: this.getVal('record-notice'),
+                        resources: this.getVal('record-resources'),
+                        direction: this.getVal('record-direction'),
+                        nextStep: this.getVal('record-nextStep'),
+                        secondStep: this.getVal('record-secondStep'),
+                        review: this.getVal('record-review')
+                    };
+                },
+
+                setInitialState() {
+                    this.initialState = this.getFormState();
+                    this.updateDirtyUI();
+                },
+
+                isDirty() {
+                    if (!this.initialState) return false;
+                    return JSON.stringify(this.initialState) !== JSON.stringify(this.getFormState());
+                },
+
+                updateDirtyUI() {
+                    const badge = document.getElementById('record-dirty-badge');
+                    if (window.location.hash.startsWith('#record')) {
+                        badge.classList.toggle('hidden', !this.isDirty());
+                    }
+                },
+
+                showUnsavedDialog(action) {
+                    pendingNavigationAction = action;
+                    document.getElementById('dialog-unsaved').classList.remove('hidden');
+                },
+
+                resetForm() {
+                    ['record-title', 'record-fact', 'record-signs', 'record-notice', 'record-resources',
+                        'record-direction', 'record-nextStep', 'record-secondStep', 'record-review'].forEach(id => {
+                            document.getElementById(id).value = '';
+                        });
+                    this.setInitialState();
+                },
+
+                setupInputs() {
+                    if (this.isSetupInputs) return;
+                    document.querySelectorAll('.record-input').forEach(input => {
+                        input.addEventListener('input', () => this.updateDirtyUI());
+                    });
+                    this.isSetupInputs = true;
+                },
+
+                async setupHelpers() {
+                    this.setupInputs();
+                    const keywords = await db.getAll('keywords');
+                    const getKws = (gId) => keywords.filter(k => k.groupId === gId).sort((a, b) => a.sortOrder - b.sortOrder);
+
+                    this.renderHelper('helper-signs', getKws('g1'), 'record-signs', '思いつくものがあれば押してみてください。そのまま使っても、少し変えても大丈夫です。');
+                    this.renderHelper('helper-notice', getKws('g4'), 'record-notice', '頭に浮かびやすい言葉（切り分ける補助として置いています）');
+                    this.renderHelper('helper-resources', getKws('g2'), 'record-resources', '思いつくものがあれば押してみてください。');
+                    this.renderHelper('helper-direction', getKws('g3'), 'record-direction', '思いつくものがあれば押してみてください。');
+                    this.renderHelper('helper-nextStep', getKws('g5'), 'record-nextStep', '思いつくものがあれば押してみてください。まずの一歩の下書きに使えます。');
+                    this.renderHelper('helper-secondStep', getKws('g5'), 'record-secondStep', '一手目が難しいときの予備として使えます。必要なら押してみてください。');
+
+                    this.setupToggleButtons();
+                },
+
+                renderHelper(containerId, keywords, targetFieldId, customTitle) {
+                    const container = document.getElementById(containerId);
+                    clearChildren(container);
+
+                    const btn = document.querySelector(`.btn-helper-toggle[data-target="${containerId}"]`);
+
+                    if (!keywords || keywords.length === 0) {
+                        container.classList.add('hidden');
+                        if (btn) btn.classList.add('hidden');
+                        return;
+                    }
+
+                    // 状態の復元
+                    if (this.helperStates[containerId]) {
+                        container.classList.remove('hidden');
+                        if (btn) {
+                            btn.classList.remove('hidden');
+                            btn.textContent = 'キーワード ▲';
+                            btn.setAttribute('aria-expanded', 'true');
+                        }
+                    } else {
+                        container.classList.add('hidden');
+                        if (btn) {
+                            btn.classList.remove('hidden');
+                            btn.textContent = 'キーワード ▼';
+                            btn.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+
+                    const titleText = customTitle || '思いつくものがあれば押してみてください。そのまま使っても、言い換えても大丈夫です。';
+                    container.appendChild(el('div', { className: 'helper-title' }, titleText));
+
+                    const wrap = el('div', { className: 'keyword-chip-wrap' });
+                    keywords.forEach(kw => {
+                        wrap.appendChild(el('button', {
+                            type: 'button',
+                            className: 'keyword-chip',
+                            onclick: (e) => {
+                                e.preventDefault();
+                                this.insertKeyword(targetFieldId, kw.label);
+                            }
+                        }, kw.label));
+                    });
+                    container.appendChild(wrap);
+                },
+
+                setupToggleButtons() {
+                    document.querySelectorAll('.btn-helper-toggle').forEach(btn => {
+                        btn.onclick = () => {
+                            const targetId = btn.getAttribute('data-target');
+                            const targetEl = document.getElementById(targetId);
+
+                            if (targetEl.classList.contains('hidden')) {
+                                targetEl.classList.remove('hidden');
+                                btn.textContent = 'キーワード ▲';
+                                btn.setAttribute('aria-expanded', 'true');
+                                this.helperStates[targetId] = true;
+                            } else {
+                                targetEl.classList.add('hidden');
+                                btn.textContent = 'キーワード ▼';
+                                btn.setAttribute('aria-expanded', 'false');
+                                this.helperStates[targetId] = false;
+                            }
+                        };
+                    });
+                },
+
+                insertKeyword(fieldId, keywordLabel) {
+                    const fieldEl = document.getElementById(fieldId);
+                    let currentVal = fieldEl.value.trim();
+
+                    const lines = currentVal.split('\n').map(l => l.trim());
+                    if (lines.includes(keywordLabel)) {
+                        showMessage('すでに入力されています');
+                        return;
+                    }
+
+                    if (currentVal === '') {
+                        currentVal = keywordLabel;
+                    } else {
+                        currentVal += '\n' + keywordLabel;
+                    }
+                    fieldEl.value = currentVal;
+                    this.updateDirtyUI();
+                    showMessage('入力欄に追加しました');
+                },
+
+                async load(id) {
+                    const entry = await db.get('entries', id);
+                    if (!entry) return showMessage('記録が見つかりません', true);
+
+                    this.setVal('record-title', entry.title);
+                    this.setVal('record-fact', entry.fact);
+                    this.setArray('record-signs', entry.signs);
+                    this.setArray('record-notice', entry.notice);
+                    this.setArray('record-resources', entry.resources);
+                    this.setArray('record-direction', entry.direction);
+                    this.setVal('record-nextStep', entry.nextStep);
+                    this.setVal('record-secondStep', entry.secondStep);
+                    this.setVal('record-review', entry.review);
+
+                    this.setInitialState();
+                },
+
+                async save() {
+                    const title = this.getVal('record-title');
+                    if (!title) {
+                        showMessage('タイトルを入力して次に進みましょう', true);
+                        document.getElementById('record-title').focus();
+                        return;
+                    }
+
+                    const now = new Date().toISOString();
+                    const isNew = !currentEditId;
+                    const id = isNew ? generateId() : currentEditId;
+
+                    let createdAt = now;
+                    if (!isNew) {
+                        const existing = await db.get('entries', id);
+                        if (existing && existing.createdAt) createdAt = existing.createdAt;
+                    }
+
+                    const entry = {
+                        id,
+                        createdAt,
+                        updatedAt: now,
+                        title,
+                        fact: this.getVal('record-fact'),
+                        signs: Array.from(new Set(this.getArray('record-signs'))),
+                        notice: Array.from(new Set(this.getArray('record-notice'))),
+                        resources: Array.from(new Set(this.getArray('record-resources'))),
+                        direction: Array.from(new Set(this.getArray('record-direction'))),
+                        nextStep: this.getVal('record-nextStep'),
+                        secondStep: this.getVal('record-secondStep'),
+                        review: this.getVal('record-review'),
+                        tags: [],
+                        starred: false,
+                        archived: false,
+                        schemaVersion: 1
+                    };
+
+                    try {
+                        await db.put('entries', entry);
+                        showMessage('記録を保存しました');
+                        this.setInitialState(); // 保存完了後は状態をクリアして同期
+                        this.helperStates = {};
+                        window.location.hash = `#detail/${id}`;
+                    } catch (e) {
+                        console.error(e);
+                        showMessage('うまく記録できませんでした。時間をおいてお試しください。', true);
+                    }
+                }
+            },
+
+            // --- 記録一覧画面 ---
+            List: {
+                isSelecting: false,
+                selectedIds: new Set(),
+
+                toggleSelectMode() {
+                    this.isSelecting = !this.isSelecting;
+                    this.selectedIds.clear();
+                },
+
+                async render() {
+                    const actions = document.getElementById('list-actions');
+                    const container = document.getElementById('list-container');
+                    const emptyMsg = document.getElementById('list-empty');
+                    clearChildren(actions);
+                    clearChildren(container);
+
+                    const entries = await db.getAll('entries');
+
+                    if (entries.length === 0) {
+                        actions.classList.add('hidden');
+                        emptyMsg.classList.remove('hidden');
+                        this.isSelecting = false;
+                        return;
+                    }
+
+                    actions.classList.remove('hidden');
+                    emptyMsg.classList.add('hidden');
+
+                    // Header Actions
+                    if (!this.isSelecting) {
+                        actions.style.flexDirection = 'row';
+                        actions.style.alignItems = 'center';
+                        actions.style.padding = '0';
+                        actions.style.backgroundColor = 'transparent';
+                        actions.style.border = 'none';
+
+                        actions.appendChild(el('div', {})); // spacer
+                        actions.appendChild(el('button', {
+                            className: 'btn btn-secondary',
+                            style: 'padding: 0.5rem 1rem; font-size: 0.9rem; min-height: auto;',
+                            onclick: () => { this.toggleSelectMode(); this.render(); }
+                        }, '📤 支援用に書き出す'));
+                    } else {
+                        actions.style.flexDirection = 'column';
+                        actions.style.alignItems = 'stretch';
+                        actions.style.padding = '1rem';
+                        actions.style.backgroundColor = 'rgba(13, 148, 136, 0.05)';
+                        actions.style.border = '1px solid rgba(13, 148, 136, 0.3)';
+
+                        const headerInfo = el('div', { className: 'mb-4' },
+                            el('h3', { style: 'color: var(--primary); font-size: 1.1rem; margin-bottom: 0.25rem;' }, '支援用書き出しモード'),
+                            el('p', { className: 'text-sub', style: 'font-size: 0.85rem; margin: 0;' }, '書き出したい記録を選んでください。')
+                        );
+
+                        const topRow = el('div', { className: 'flex justify-between mb-2', style: 'align-items: center;' },
+                            el('span', { style: 'font-weight: bold; color: var(--primary);' }, `${this.selectedIds.size}件選択中`),
+                            el('button', {
+                                className: 'btn btn-text',
+                                style: 'padding: 0;',
+                                onclick: () => { this.selectedIds.clear(); this.render(); }
+                            }, '選択解除')
+                        );
+
+                        const btnRow = el('div', { className: 'flex gap-2' },
+                            el('button', {
+                                className: 'btn btn-primary',
+                                style: 'flex: 2; padding: 0.5rem; font-size: 0.9rem;',
+                                disabled: this.selectedIds.size === 0,
+                                onclick: () => {
+                                    if (this.selectedIds.size === 0) return;
+                                    const targetEntries = entries.filter(e => this.selectedIds.has(e.id));
+                                    targetEntries.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+                                    Views.SupportExport.show(targetEntries);
+                                }
+                            }, '📤 書き出す'),
+                            el('button', {
+                                className: 'btn btn-secondary',
+                                style: 'flex: 1; padding: 0.5rem; font-size: 0.9rem;',
+                                onclick: () => { this.toggleSelectMode(); this.render(); }
+                            }, 'やめる')
+                        );
+
+                        actions.appendChild(headerInfo);
+                        actions.appendChild(topRow);
+                        actions.appendChild(btnRow);
+                    }
+
+                    entries.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+                    entries.forEach(entry => {
+                        if (!this.isSelecting) {
+                            const item = el('a', { className: 'list-item', href: `#detail/${entry.id}` },
+                                el('div', { className: 'list-item-title' }, entry.title),
+                                el('div', { className: 'list-item-meta' }, formatDate(entry.updatedAt) + (entry.nextStep ? ' | 次の一手あり' : ''))
+                            );
+                            container.appendChild(item);
+                        } else {
+                            const isChecked = this.selectedIds.has(entry.id);
+                            const itemStyle = `cursor: pointer; align-items: center; gap: 1rem; border-color: ${isChecked ? 'var(--primary)' : 'var(--border)'}; background-color: ${isChecked ? 'rgba(13, 148, 136, 0.05)' : 'var(--surface)'};`;
+                            const item = el('div', {
+                                className: 'list-item flex',
+                                style: itemStyle,
+                                onclick: () => {
+                                    if (isChecked) this.selectedIds.delete(entry.id);
+                                    else this.selectedIds.add(entry.id);
+                                    this.render();
+                                }
+                            },
+                                el('input', { type: 'checkbox', checked: isChecked, style: 'width: 1.2rem; height: 1.2rem; pointer-events: none;' }),
+                                el('div', { style: 'flex: 1;' },
+                                    el('div', { className: 'list-item-title' }, entry.title),
+                                    el('div', { className: 'list-item-meta' }, formatDate(entry.updatedAt))
+                                )
+                            );
+                            container.appendChild(item);
+                        }
+                    });
+                }
+            },
+
+            // --- 記録詳細画面 ---
+            Detail: {
+                async render(id) {
+                    const entry = await db.get('entries', id);
+                    if (!entry) {
+                        showMessage('記録が見つかりません', true);
+                        window.history.back();
+                        return;
+                    }
+
+                    document.getElementById('detail-title').textContent = entry.title;
+                    document.getElementById('detail-date').textContent = `作成: ${formatDate(entry.createdAt)} / 更新: ${formatDate(entry.updatedAt)}`;
+                    document.getElementById('detail-fact').textContent = entry.fact || '（未入力）';
+
+                    const setList = (elementId, array) => {
+                        const ul = document.getElementById(elementId);
+                        clearChildren(ul);
+                        if (!array || array.length === 0) {
+                            ul.appendChild(el('li', { className: 'text-sub' }, '（未入力）'));
+                        } else {
+                            array.forEach(item => ul.appendChild(el('li', {}, item)));
+                        }
+                    };
+
+                    setList('detail-signs', entry.signs);
+                    setList('detail-notice', entry.notice);
+                    setList('detail-resources', entry.resources);
+                    setList('detail-direction', entry.direction);
+
+                    document.getElementById('detail-nextStep').textContent = entry.nextStep || '（未入力）';
+                    document.getElementById('detail-secondStep').textContent = entry.secondStep || '（未入力）';
+
+                    document.getElementById('btn-detail-export').onclick = () => {
+                        Views.SupportExport.show([entry]);
+                    };
+
+                    document.getElementById('btn-detail-edit').onclick = () => {
+                        window.location.hash = `#record/${entry.id}`;
+                    };
+
+                    document.getElementById('btn-detail-trash').onclick = async () => {
+                        if (confirm('この記録をゴミ箱に移しますか？\nあとから復元できます。')) {
+                            try {
+                                const now = new Date().toISOString();
+                                const trashItem = {
+                                    ...entry,
+                                    deletedAt: now,
+                                    trashedFrom: 'entries'
+                                };
+
+                                await db.put('trash', trashItem);
+                                await db.delete('entries', entry.id);
+
+                                showMessage('記録をゴミ箱に移しました');
+                                window.location.hash = '#list';
+                            } catch (e) {
+                                console.error(e);
+                                showMessage('ゴミ箱への移動に失敗しました。', true);
+                            }
+                        }
+                    };
+                }
+            },
+
+            // --- 支援用書き出し（エクスポート） ---
+            SupportExport: {
+                targetEntries: [],
+
+                show(entries) {
+                    if (!entries || entries.length === 0) return;
+                    this.targetEntries = entries;
+                    document.getElementById('dialog-support-export').classList.remove('hidden');
+
+                    const countText = entries.length === 1
+                        ? 'この記録を支援用に書き出します。'
+                        : `${entries.length}件の記録を支援用に書き出します。`;
+                    document.getElementById('export-modal-count-text').textContent = countText;
+
+                    // 初期値リセット
+                    document.getElementById('opt-title').checked = true;
+                    document.getElementById('opt-fact').checked = true;
+                    document.getElementById('opt-signs').checked = true;
+                    document.getElementById('opt-notice').checked = true;
+                    document.getElementById('opt-resources').checked = true;
+                    document.getElementById('opt-direction').checked = true;
+                    document.getElementById('opt-nextStep').checked = true;
+                    document.getElementById('opt-review').checked = false;
+                },
+
+                close() {
+                    document.getElementById('dialog-support-export').classList.add('hidden');
+                    this.targetEntries = [];
+                    // 一覧の選択モード維持のため、toggleSelectMode()等は呼ばない
+                },
+
+                exec() {
+                    const confirmMsg = "支援用に書き出します。\n\nこのまま書き出しますか？";
+                    if (!confirm(confirmMsg)) return;
+
+                    const options = {
+                        title: document.getElementById('opt-title').checked,
+                        fact: document.getElementById('opt-fact').checked,
+                        signs: document.getElementById('opt-signs').checked,
+                        notice: document.getElementById('opt-notice').checked,
+                        resources: document.getElementById('opt-resources').checked,
+                        direction: document.getElementById('opt-direction').checked,
+                        nextStep: document.getElementById('opt-nextStep').checked,
+                        review: document.getElementById('opt-review').checked,
+                    };
+
+                    const text = this.buildText(this.targetEntries, options);
+                    this.downloadText(text);
+                    this.close();
+
+                    // リスト画面の選択モードを解除
+                    if (Views.List.isSelecting) {
+                        Views.List.toggleSelectMode();
+                        Views.List.render();
+                    }
+                },
+
+                buildText(entries, opt) {
+                    return entries.map(entry => {
+                        let lines = [];
+
+                        if (opt.title) {
+                            lines.push(`タイトル：${entry.title || '（未入力）'}`);
+                            lines.push(`作成：${formatDate(entry.createdAt)}`);
+                            lines.push(`更新：${formatDate(entry.updatedAt)}`);
+                            lines.push('');
+                        }
+
+                        if (opt.fact && entry.fact) {
+                            lines.push('実際に起きたこと');
+                            lines.push(entry.fact);
+                            lines.push('');
+                        }
+
+                        const addList = (label, arr) => {
+                            if (arr && arr.length > 0) {
+                                lines.push(label);
+                                arr.forEach(item => lines.push(`- ${item}`));
+                                lines.push('');
+                            }
+                        };
+
+                        if (opt.signs) addList('前兆', entry.signs);
+                        if (opt.notice) addList('よく出る通知', entry.notice);
+                        if (opt.resources) addList('使える資源', entry.resources);
+                        if (opt.direction) addList('行動指針', entry.direction);
+
+                        if (opt.nextStep) {
+                            if (entry.nextStep) {
+                                lines.push('次の一手');
+                                lines.push(entry.nextStep);
+                                lines.push('');
+                            }
+                            if (entry.secondStep) {
+                                lines.push('二手目');
+                                lines.push(entry.secondStep);
+                                lines.push('');
+                            }
+                        }
+
+                        if (opt.review && entry.review) {
+                            lines.push('ふり返りメモ');
+                            lines.push(entry.review);
+                            lines.push('');
+                        }
+
+                        return lines.join('\n').trim();
+                    }).join('\n\n----------------------------------------\n\n');
+                },
+
+                downloadText(text) {
+                    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+                    a.download = `restart-memo-support-${dateStr}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showMessage('支援用テキストを保存しました');
+                }
+            },
+
+            // --- 設定画面 (キーワード・データ管理) ---
+            Settings: {
+                togglesSetup: false,
+
+                render() {
+                    Views.Keywords.render();
+                    this.setupToggles();
+                },
+
+                setupToggles() {
+                    if (this.togglesSetup) return;
+                    document.querySelectorAll('.settings-toggle-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const targetId = btn.getAttribute('aria-controls');
+                            const targetEl = document.getElementById(targetId);
+                            const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+
+                            btn.setAttribute('aria-expanded', !isExpanded);
+                            const icon = btn.querySelector('.toggle-icon');
+                            if (icon) icon.textContent = isExpanded ? '▼' : '▲';
+
+                            if (isExpanded) {
+                                targetEl.classList.add('hidden');
+                            } else {
+                                targetEl.classList.remove('hidden');
+                            }
+                        });
+                    });
+                    this.togglesSetup = true;
+                }
+            },
+
+            // --- ゴミ箱画面 ---
+            Trash: {
+                async render() {
+                    const container = document.getElementById('trash-container');
+                    const emptyMsg = document.getElementById('trash-empty');
+                    clearChildren(container);
+
+                    const trashedItems = await db.getAll('trash');
+
+                    if (trashedItems.length === 0) {
+                        emptyMsg.classList.remove('hidden');
+                        return;
+                    }
+                    emptyMsg.classList.add('hidden');
+
+                    trashedItems.sort((a, b) => new Date(b.deletedAt) - new Date(a.deletedAt));
+
+                    trashedItems.forEach(item => {
+                        const elItem = el('div', { className: 'list-item', style: 'cursor: default;' },
+                            el('div', { className: 'list-item-title' }, item.title || '（タイトルなし）'),
+                            el('div', { className: 'list-item-meta mb-2' },
+                                `ゴミ箱に入れた日時: ${formatDate(item.deletedAt)}`
+                            ),
+                            el('div', { className: 'flex gap-2' },
+                                el('button', {
+                                    className: 'btn btn-secondary',
+                                    style: 'flex: 1; padding: 0.5rem; font-size: 0.9rem; min-height: 36px;',
+                                    onclick: () => this.restore(item)
+                                }, '元に戻す'),
+                                el('button', {
+                                    className: 'btn btn-secondary',
+                                    style: 'flex: 1; padding: 0.5rem; font-size: 0.9rem; min-height: 36px; color: var(--error);',
+                                    onclick: () => this.deletePermanently(item.id)
+                                }, '完全に削除')
+                            )
+                        );
+                        container.appendChild(elItem);
+                    });
+                },
+
+                async restore(item) {
+                    const existing = await db.get('entries', item.id);
+                    if (existing) {
+                        if (!confirm('同じ記録IDのデータがすでにあります。復元すると上書きされます。続けますか？')) {
+                            return;
+                        }
+                    }
+
+                    try {
+                        const { deletedAt, trashedFrom, ...entryData } = item;
+
+                        await db.put('entries', entryData);
+                        await db.delete('trash', item.id);
+
+                        showMessage('記録を元に戻しました');
+                        this.render();
+                    } catch (e) {
+                        console.error(e);
+                        showMessage('復元に失敗しました。', true);
+                    }
+                },
+
+                async deletePermanently(id) {
+                    if (confirm('この記録を完全に削除しますか？\nこの操作を行うと、あとから戻せません。')) {
+                        try {
+                            await db.delete('trash', id);
+                            showMessage('記録を完全に削除しました');
+                            this.render();
+                        } catch (e) {
+                            console.error(e);
+                            showMessage('削除に失敗しました。', true);
+                        }
+                    }
+                }
+            },
+
+            // --- キーワード管理用部品 ---
+            Keywords: {
+                editingKeywordId: null,
+
+                async render() {
+                    const container = document.getElementById('keywords-container');
+                    clearChildren(container);
+
+                    const groups = await db.getAll('keyword_groups');
+                    const keywords = await db.getAll('keywords');
+                    groups.sort((a, b) => a.sortOrder - b.sortOrder);
+
+                    const intro = el('p', { className: 'text-sub mb-4' }, 'しんどいときに思い出しやすい短い言葉を入れておくと、記録が少し書きやすくなります。あとから画面内で編集できます。');
+                    container.appendChild(intro);
+
+                    groups.forEach(g => {
+                        const groupKws = keywords.filter(k => k.groupId === g.id).sort((a, b) => a.sortOrder - b.sortOrder);
+
+                        const groupSec = el('div', { className: 'mb-4' });
+                        groupSec.appendChild(el('h3', { className: 'mb-2', style: 'font-size:1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;' }, g.name));
+
+                        const list = el('ul', { style: 'list-style: none; padding: 0; margin-bottom: 1rem;' });
+                        groupKws.forEach(k => {
+                            const li = el('li', { className: 'flex justify-between', style: 'padding: 0.5rem; background: var(--bg-color); border-radius: 6px; margin-bottom: 0.5rem; align-items: center;' });
+
+                            if (this.editingKeywordId === k.id) {
+                                // 編集モード
+                                const editInput = el('input', { type: 'text', className: 'form-control', style: 'flex: 1; padding: 0.4rem; font-size: 0.9rem; margin-right: 0.5rem;', value: k.label, id: `edit-input-${k.id}` });
+                                li.appendChild(editInput);
+
+                                const btnWrap = el('div', { className: 'flex gap-2' });
+                                btnWrap.appendChild(el('button', { type: 'button', className: 'btn btn-primary', style: 'padding: 0.25rem 0.5rem; min-height: auto; font-size: 0.85rem;', onclick: () => this.saveEditKeyword(k) }, '保存'));
+                                btnWrap.appendChild(el('button', { type: 'button', className: 'btn btn-secondary', style: 'padding: 0.25rem 0.5rem; min-height: auto; font-size: 0.85rem;', onclick: () => { this.editingKeywordId = null; this.render(); } }, 'キャンセル'));
+                                li.appendChild(btnWrap);
+                            } else {
+                                // 通常モード
+                                li.appendChild(el('span', { style: 'flex: 1; margin-right: 0.5rem; word-break: break-word;' }, k.label));
+                                const btnWrap = el('div', { className: 'flex gap-2' });
+                                btnWrap.appendChild(el('button', { type: 'button', className: 'btn btn-secondary', style: 'padding: 0.25rem 0.5rem; min-height: auto; font-size: 0.85rem;', onclick: () => { this.editingKeywordId = k.id; this.render(); } }, '編集'));
+                                btnWrap.appendChild(el('button', { type: 'button', className: 'btn btn-secondary', style: 'padding: 0.25rem 0.5rem; min-height: auto; font-size: 0.85rem; color: var(--error);', onclick: () => this.deleteKeyword(k.id) }, '削除'));
+                                li.appendChild(btnWrap);
+                            }
+
+                            list.appendChild(li);
+                        });
+                        groupSec.appendChild(list);
+
+                        const addForm = el('div', { className: 'flex gap-2' },
+                            el('input', { type: 'text', id: `new-kw-${g.id}`, className: 'form-control', style: 'flex: 1; padding: 0.5rem;', placeholder: '短い言葉を追加' }),
+                            el('button', { type: 'button', className: 'btn btn-primary', style: 'padding: 0.5rem 1rem; min-height: auto;', onclick: () => this.addKeyword(g.id) }, '追加する')
+                        );
+                        groupSec.appendChild(addForm);
+
+                        container.appendChild(groupSec);
+                    });
+                },
+
+                async saveEditKeyword(k) {
+                    const input = document.getElementById(`edit-input-${k.id}`);
+                    if (!input) return;
+                    const newLabel = input.value.trim();
+
+                    if (!newLabel) {
+                        showMessage('キーワードを入力してください', true);
+                        return;
+                    }
+
+                    const keywords = await db.getAll('keywords');
+                    const isDup = keywords.some(kw => kw.groupId === k.groupId && kw.id !== k.id && kw.label === newLabel);
+                    if (isDup) {
+                        showMessage('同じグループ内にすでに登録されています', true);
+                        return;
+                    }
+
+                    const now = new Date().toISOString();
+                    await db.put('keywords', { ...k, label: newLabel, updatedAt: now });
+                    showMessage('更新しました');
+                    this.editingKeywordId = null;
+                    this.render();
+                },
+
+                async deleteKeyword(id) {
+                    if (confirm('このキーワードを削除しますか？')) {
+                        await db.delete('keywords', id);
+                        showMessage('削除しました');
+                        this.render();
+                    }
+                },
+
+                async addKeyword(groupId) {
+                    const input = document.getElementById(`new-kw-${groupId}`);
+                    const label = input.value.trim();
+                    if (!label) return;
+
+                    const keywords = await db.getAll('keywords');
+                    const groupKws = keywords.filter(k => k.groupId === groupId);
+
+                    if (groupKws.some(k => k.label === label)) {
+                        showMessage('同じグループ内にすでに登録されています', true);
+                        return;
+                    }
+
+                    const now = new Date().toISOString();
+                    const newKw = {
+                        id: generateId(),
+                        groupId,
+                        label,
+                        sortOrder: groupKws.length + 1,
+                        isSystem: false,
+                        createdAt: now,
+                        updatedAt: now,
+                        schemaVersion: 1
+                    };
+
+                    await db.put('keywords', newKw);
+                    input.value = '';
+                    showMessage('追加しました');
+                    this.render();
+                }
+            },
+
+            // --- バックアップ用ロジック ---
+            Backup: {
+                async export() {
+                    try {
+                        const entries = await db.getAll('entries');
+                        const keywordGroups = await db.getAll('keyword_groups');
+                        const keywords = await db.getAll('keywords');
+                        const trash = await db.getAll('trash');
+
+                        const exportData = {
+                            app: "restart-memo",
+                            exportedAt: new Date().toISOString(),
+                            schemaVersion: 1,
+                            device: { platform: navigator.platform || 'unknown', appVersion: "1.0.0" },
+                            settings: { theme: "system", layout: "auto", autoSave: true, showArchived: false },
+                            keywordGroups,
+                            keywords,
+                            entries,
+                            trash
+                        };
+
+                        const json = JSON.stringify(exportData, null, 2);
+                        const blob = new Blob([json], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+
+                        const a = document.createElement('a');
+                        a.href = url;
+                        const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+                        a.download = `restart-memo-${dateStr}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+
+                        showMessage('バックアップファイルを保存しました');
+                    } catch (e) {
+                        console.error(e);
+                        showMessage('書き出しに失敗しました', true);
+                    }
+                },
+
+                async import(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    event.target.value = '';
+
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        try {
+                            const data = JSON.parse(e.target.result);
+
+                            if (data.app !== 'restart-memo' || !data.entries) {
+                                throw new Error('対応していないファイル形式です');
+                            }
+
+                            if (!confirm(`バックアップデータから ${data.entries.length} 件の記録を読み込みますか？\n既存のデータに追加されます。ただし、同じ記録IDがある場合は上書きされます。`)) {
+                                return;
+                            }
+
+                            let importedCount = 0;
+                            for (const entry of data.entries) {
+                                if (entry.id && entry.title) {
+                                    await db.put('entries', entry);
+                                    importedCount++;
+                                }
+                            }
+
+                            let importedTrashCount = 0;
+                            if (data.trash && Array.isArray(data.trash)) {
+                                for (const item of data.trash) {
+                                    if (item.id) {
+                                        await db.put('trash', item);
+                                        importedTrashCount++;
+                                    }
+                                }
+                            }
+
+                            let importedKwGroupCount = 0;
+                            if (data.keywordGroups && Array.isArray(data.keywordGroups)) {
+                                for (const item of data.keywordGroups) {
+                                    if (item.id && item.name) {
+                                        await db.put('keyword_groups', item);
+                                        importedKwGroupCount++;
+                                    }
+                                }
+                            }
+
+                            let importedKwCount = 0;
+                            if (data.keywords && Array.isArray(data.keywords)) {
+                                for (const item of data.keywords) {
+                                    if (item.id && item.label) {
+                                        await db.put('keywords', item);
+                                        importedKwCount++;
+                                    }
+                                }
+                            }
+
+                            let msg = `${importedCount} 件の記録を読み込みました`;
+                            if (importedTrashCount > 0) {
+                                msg += `（ゴミ箱 ${importedTrashCount} 件を含む）`;
+                            }
+                            showMessage(msg);
+                        } catch (err) {
+                            console.error(err);
+                            showMessage('ファイルの読み込みに失敗しました。正しいファイルかご確認ください。', true);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            },
+
+            // --- アプリの初期化 ---
+            Initialize: {
+                show() {
+                    document.getElementById('input-init-confirm').value = '';
+                    document.getElementById('btn-exec-init').disabled = true;
+                    document.getElementById('dialog-initialize').classList.remove('hidden');
+                },
+
+                close() {
+                    document.getElementById('dialog-initialize').classList.add('hidden');
+                },
+
+                async exec() {
+                    try {
+                        const stores = ['app_meta', 'settings', 'entries', 'keyword_groups', 'keywords', 'drafts', 'trash', 'export_history'];
+                        for (const store of stores) {
+                            await db.clear(store);
+                        }
+
+                        const now = new Date().toISOString();
+                        for (const g of initialKeywordGroups) {
+                            await db.put('keyword_groups', { ...g, createdAt: now, updatedAt: now });
+                        }
+                        for (const k of initialKeywordsData) {
+                            await db.put('keywords', { ...k, isSystem: true, createdAt: now, updatedAt: now, schemaVersion: 1 });
+                        }
+
+                        currentEditId = null;
+                        Views.Record.helperStates = {};
+                        Views.Record.initialState = null;
+
+                        showMessage('アプリを初期状態に戻しました');
+                        this.close();
+
+                        // 初期化完了後は初回ガイドへ戻す
+                        window.location.hash = '#guide';
+                    } catch (e) {
+                        console.error(e);
+                        showMessage('初期化に失敗しました。', true);
+                    }
+                }
+            }
+        };
+
+
+        let swRegistration = null;
+        let refreshing = false;
+
+        function showUpdateToast() {
+            const toast = document.getElementById('update-toast');
+            if (toast) toast.classList.remove('hidden');
         }
-      },
 
-      // --- 支援用書き出し（エクスポート） ---
-      SupportExport: {
-        targetEntries: [],
-
-        show(entries) {
-          if (!entries || entries.length === 0) return;
-          this.targetEntries = entries;
-          document.getElementById('dialog-support-export').classList.remove('hidden');
-          
-          const countText = entries.length === 1 
-            ? 'この記録を支援用に書き出します。' 
-            : `${entries.length}件の記録を支援用に書き出します。`;
-          document.getElementById('export-modal-count-text').textContent = countText;
-          
-          // 初期値リセット
-          document.getElementById('opt-title').checked = true;
-          document.getElementById('opt-fact').checked = true;
-          document.getElementById('opt-signs').checked = true;
-          document.getElementById('opt-notice').checked = true;
-          document.getElementById('opt-resources').checked = true;
-          document.getElementById('opt-direction').checked = true;
-          document.getElementById('opt-nextStep').checked = true;
-          document.getElementById('opt-review').checked = false;
-        },
-
-        close() {
-          document.getElementById('dialog-support-export').classList.add('hidden');
-          this.targetEntries = [];
-          // 一覧の選択モード維持のため、toggleSelectMode()等は呼ばない
-        },
-
-        exec() {
-          const confirmMsg = "支援用に書き出します。\n\nこのまま書き出しますか？";
-          if (!confirm(confirmMsg)) return;
-
-          const options = {
-            title: document.getElementById('opt-title').checked,
-            fact: document.getElementById('opt-fact').checked,
-            signs: document.getElementById('opt-signs').checked,
-            notice: document.getElementById('opt-notice').checked,
-            resources: document.getElementById('opt-resources').checked,
-            direction: document.getElementById('opt-direction').checked,
-            nextStep: document.getElementById('opt-nextStep').checked,
-            review: document.getElementById('opt-review').checked,
-          };
-
-          const text = this.buildText(this.targetEntries, options);
-          this.downloadText(text);
-          this.close();
-
-          // リスト画面の選択モードを解除
-          if (Views.List.isSelecting) {
-            Views.List.toggleSelectMode();
-            Views.List.render();
-          }
-        },
-
-        buildText(entries, opt) {
-          return entries.map(entry => {
-            let lines = [];
-            
-            if (opt.title) {
-              lines.push(`タイトル：${entry.title || '（未入力）'}`);
-              lines.push(`作成：${formatDate(entry.createdAt)}`);
-              lines.push(`更新：${formatDate(entry.updatedAt)}`);
-              lines.push('');
-            }
-
-            if (opt.fact && entry.fact) {
-              lines.push('実際に起きたこと');
-              lines.push(entry.fact);
-              lines.push('');
-            }
-
-            const addList = (label, arr) => {
-              if (arr && arr.length > 0) {
-                lines.push(label);
-                arr.forEach(item => lines.push(`- ${item}`));
-                lines.push('');
-              }
-            };
-
-            if (opt.signs) addList('前兆', entry.signs);
-            if (opt.notice) addList('よく出る通知', entry.notice);
-            if (opt.resources) addList('使える資源', entry.resources);
-            if (opt.direction) addList('行動指針', entry.direction);
-
-            if (opt.nextStep) {
-              if (entry.nextStep) {
-                lines.push('次の一手');
-                lines.push(entry.nextStep);
-                lines.push('');
-              }
-              if (entry.secondStep) {
-                lines.push('二手目');
-                lines.push(entry.secondStep);
-                lines.push('');
-              }
-            }
-
-            if (opt.review && entry.review) {
-              lines.push('ふり返りメモ');
-              lines.push(entry.review);
-              lines.push('');
-            }
-
-            return lines.join('\n').trim();
-          }).join('\n\n----------------------------------------\n\n');
-        },
-
-        downloadText(text) {
-          const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
-          a.download = `restart-memo-support-${dateStr}.txt`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          showMessage('支援用テキストを保存しました');
+        function hideUpdateToast() {
+            const toast = document.getElementById('update-toast');
+            if (toast) toast.classList.add('hidden');
         }
-      },
 
-      // --- 設定画面 (キーワード・データ管理) ---
-      Settings: {
-        togglesSetup: false,
+        function setupUpdateToastEvents() {
+            const btnNow = document.getElementById('btn-update-now');
+            const btnLater = document.getElementById('btn-update-later');
 
-        render() {
-          Views.Keywords.render();
-          this.setupToggles();
-        },
-
-        setupToggles() {
-          if (this.togglesSetup) return;
-          document.querySelectorAll('.settings-toggle-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-              const targetId = btn.getAttribute('aria-controls');
-              const targetEl = document.getElementById(targetId);
-              const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-              
-              btn.setAttribute('aria-expanded', !isExpanded);
-              const icon = btn.querySelector('.toggle-icon');
-              if (icon) icon.textContent = isExpanded ? '▼' : '▲';
-              
-              if (isExpanded) {
-                targetEl.classList.add('hidden');
-              } else {
-                targetEl.classList.remove('hidden');
-              }
-            });
-          });
-          this.togglesSetup = true;
-        }
-      },
-
-      // --- ゴミ箱画面 ---
-      Trash: {
-        async render() {
-          const container = document.getElementById('trash-container');
-          const emptyMsg = document.getElementById('trash-empty');
-          clearChildren(container);
-
-          const trashedItems = await db.getAll('trash');
-          
-          if (trashedItems.length === 0) {
-            emptyMsg.classList.remove('hidden');
-            return;
-          }
-          emptyMsg.classList.add('hidden');
-
-          trashedItems.sort((a, b) => new Date(b.deletedAt) - new Date(a.deletedAt));
-
-          trashedItems.forEach(item => {
-            const elItem = el('div', { className: 'list-item', style: 'cursor: default;' },
-              el('div', { className: 'list-item-title' }, item.title || '（タイトルなし）'),
-              el('div', { className: 'list-item-meta mb-2' }, 
-                `ゴミ箱に入れた日時: ${formatDate(item.deletedAt)}`
-              ),
-              el('div', { className: 'flex gap-2' },
-                el('button', { 
-                  className: 'btn btn-secondary', 
-                  style: 'flex: 1; padding: 0.5rem; font-size: 0.9rem; min-height: 36px;',
-                  onclick: () => this.restore(item)
-                }, '元に戻す'),
-                el('button', { 
-                  className: 'btn btn-secondary', 
-                  style: 'flex: 1; padding: 0.5rem; font-size: 0.9rem; min-height: 36px; color: var(--error);',
-                  onclick: () => this.deletePermanently(item.id)
-                }, '完全に削除')
-              )
-            );
-            container.appendChild(elItem);
-          });
-        },
-
-        async restore(item) {
-          const existing = await db.get('entries', item.id);
-          if (existing) {
-            if (!confirm('同じ記録IDのデータがすでにあります。復元すると上書きされます。続けますか？')) {
-              return;
+            if (btnNow) {
+                btnNow.addEventListener('click', () => {
+                    if (swRegistration && swRegistration.waiting) {
+                        swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    }
+                });
             }
-          }
 
-          try {
-            const { deletedAt, trashedFrom, ...entryData } = item;
-            
-            await db.put('entries', entryData);
-            await db.delete('trash', item.id);
-            
-            showMessage('記録を元に戻しました');
-            this.render();
-          } catch (e) {
-            console.error(e);
-            showMessage('復元に失敗しました。', true);
-          }
-        },
-
-        async deletePermanently(id) {
-          if (confirm('この記録を完全に削除しますか？\nこの操作を行うと、あとから戻せません。')) {
-            try {
-              await db.delete('trash', id);
-              showMessage('記録を完全に削除しました');
-              this.render();
-            } catch (e) {
-              console.error(e);
-              showMessage('削除に失敗しました。', true);
+            if (btnLater) {
+                btnLater.addEventListener('click', () => {
+                    hideUpdateToast();
+                });
             }
-          }
         }
-      },
 
-      // --- キーワード管理用部品 ---
-      Keywords: {
-        editingKeywordId: null,
+        function registerServiceWorker() {
+            if (!('serviceWorker' in navigator)) return;
 
-        async render() {
-          const container = document.getElementById('keywords-container');
-          clearChildren(container);
-          
-          const groups = await db.getAll('keyword_groups');
-          const keywords = await db.getAll('keywords');
-          groups.sort((a, b) => a.sortOrder - b.sortOrder);
-
-          const intro = el('p', { className: 'text-sub mb-4' }, 'しんどいときに思い出しやすい短い言葉を入れておくと、記録が少し書きやすくなります。あとから画面内で編集できます。');
-          container.appendChild(intro);
-
-          groups.forEach(g => {
-            const groupKws = keywords.filter(k => k.groupId === g.id).sort((a,b) => a.sortOrder - b.sortOrder);
-            
-            const groupSec = el('div', { className: 'mb-4' });
-            groupSec.appendChild(el('h3', { className: 'mb-2', style: 'font-size:1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;' }, g.name));
-
-            const list = el('ul', { style: 'list-style: none; padding: 0; margin-bottom: 1rem;' });
-            groupKws.forEach(k => {
-              const li = el('li', { className: 'flex justify-between', style: 'padding: 0.5rem; background: var(--bg-color); border-radius: 6px; margin-bottom: 0.5rem; align-items: center;' });
-              
-              if (this.editingKeywordId === k.id) {
-                // 編集モード
-                const editInput = el('input', { type: 'text', className: 'form-control', style: 'flex: 1; padding: 0.4rem; font-size: 0.9rem; margin-right: 0.5rem;', value: k.label, id: `edit-input-${k.id}` });
-                li.appendChild(editInput);
-                
-                const btnWrap = el('div', { className: 'flex gap-2' });
-                btnWrap.appendChild(el('button', { type: 'button', className: 'btn btn-primary', style: 'padding: 0.25rem 0.5rem; min-height: auto; font-size: 0.85rem;', onclick: () => this.saveEditKeyword(k) }, '保存'));
-                btnWrap.appendChild(el('button', { type: 'button', className: 'btn btn-secondary', style: 'padding: 0.25rem 0.5rem; min-height: auto; font-size: 0.85rem;', onclick: () => { this.editingKeywordId = null; this.render(); } }, 'キャンセル'));
-                li.appendChild(btnWrap);
-              } else {
-                // 通常モード
-                li.appendChild(el('span', { style: 'flex: 1; margin-right: 0.5rem; word-break: break-word;' }, k.label));
-                const btnWrap = el('div', { className: 'flex gap-2' });
-                btnWrap.appendChild(el('button', { type: 'button', className: 'btn btn-secondary', style: 'padding: 0.25rem 0.5rem; min-height: auto; font-size: 0.85rem;', onclick: () => { this.editingKeywordId = k.id; this.render(); } }, '編集'));
-                btnWrap.appendChild(el('button', { type: 'button', className: 'btn btn-secondary', style: 'padding: 0.25rem 0.5rem; min-height: auto; font-size: 0.85rem; color: var(--error);', onclick: () => this.deleteKeyword(k.id) }, '削除'));
-                li.appendChild(btnWrap);
-              }
-              
-              list.appendChild(li);
-            });
-            groupSec.appendChild(list);
-
-            const addForm = el('div', { className: 'flex gap-2' }, 
-              el('input', { type: 'text', id: `new-kw-${g.id}`, className: 'form-control', style: 'flex: 1; padding: 0.5rem;', placeholder: '短い言葉を追加' }),
-              el('button', { type: 'button', className: 'btn btn-primary', style: 'padding: 0.5rem 1rem; min-height: auto;', onclick: () => this.addKeyword(g.id) }, '追加する')
-            );
-            groupSec.appendChild(addForm);
-
-            container.appendChild(groupSec);
-          });
-        },
-
-        async saveEditKeyword(k) {
-          const input = document.getElementById(`edit-input-${k.id}`);
-          if (!input) return;
-          const newLabel = input.value.trim();
-          
-          if (!newLabel) {
-            showMessage('キーワードを入力してください', true);
-            return;
-          }
-          
-          const keywords = await db.getAll('keywords');
-          const isDup = keywords.some(kw => kw.groupId === k.groupId && kw.id !== k.id && kw.label === newLabel);
-          if(isDup) {
-            showMessage('同じグループ内にすでに登録されています', true);
-            return;
-          }
-
-          const now = new Date().toISOString();
-          await db.put('keywords', { ...k, label: newLabel, updatedAt: now });
-          showMessage('更新しました');
-          this.editingKeywordId = null;
-          this.render();
-        },
-
-        async deleteKeyword(id) {
-          if (confirm('このキーワードを削除しますか？')) {
-            await db.delete('keywords', id);
-            showMessage('削除しました');
-            this.render();
-          }
-        },
-
-        async addKeyword(groupId) {
-          const input = document.getElementById(`new-kw-${groupId}`);
-          const label = input.value.trim();
-          if (!label) return;
-
-          const keywords = await db.getAll('keywords');
-          const groupKws = keywords.filter(k => k.groupId === groupId);
-          
-          if (groupKws.some(k => k.label === label)) {
-            showMessage('同じグループ内にすでに登録されています', true);
-            return;
-          }
-
-          const now = new Date().toISOString();
-          const newKw = {
-            id: generateId(),
-            groupId,
-            label,
-            sortOrder: groupKws.length + 1,
-            isSystem: false,
-            createdAt: now,
-            updatedAt: now,
-            schemaVersion: 1
-          };
-
-          await db.put('keywords', newKw);
-          input.value = '';
-          showMessage('追加しました');
-          this.render();
-        }
-      },
-
-      // --- バックアップ用ロジック ---
-      Backup: {
-        async export() {
-          try {
-            const entries = await db.getAll('entries');
-            const keywordGroups = await db.getAll('keyword_groups');
-            const keywords = await db.getAll('keywords');
-            const trash = await db.getAll('trash');
-            
-            const exportData = {
-              app: "restart-memo",
-              exportedAt: new Date().toISOString(),
-              schemaVersion: 1,
-              device: { platform: navigator.platform || 'unknown', appVersion: "1.0.0" },
-              settings: { theme: "system", layout: "auto", autoSave: true, showArchived: false },
-              keywordGroups,
-              keywords,
-              entries,
-              trash
-            };
-
-            const json = JSON.stringify(exportData, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
-            a.download = `restart-memo-${dateStr}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showMessage('バックアップファイルを保存しました');
-          } catch (e) {
-            console.error(e);
-            showMessage('書き出しに失敗しました', true);
-          }
-        },
-
-        async import(event) {
-          const file = event.target.files[0];
-          if (!file) return;
-
-          event.target.value = '';
-
-          const reader = new FileReader();
-          reader.onload = async (e) => {
-            try {
-              const data = JSON.parse(e.target.result);
-              
-              if (data.app !== 'restart-memo' || !data.entries) {
-                throw new Error('対応していないファイル形式です');
-              }
-
-              if (!confirm(`バックアップデータから ${data.entries.length} 件の記録を読み込みますか？\n既存のデータに追加されます。ただし、同じ記録IDがある場合は上書きされます。`)) {
+            // 追加: プロトコルのチェック
+            if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') {
+                console.log('Service Worker is not supported in this preview environment.');
                 return;
-              }
-
-              let importedCount = 0;
-              for (const entry of data.entries) {
-                if (entry.id && entry.title) {
-                   await db.put('entries', entry);
-                   importedCount++;
-                }
-              }
-
-              let importedTrashCount = 0;
-              if (data.trash && Array.isArray(data.trash)) {
-                for (const item of data.trash) {
-                  if (item.id) {
-                    await db.put('trash', item);
-                    importedTrashCount++;
-                  }
-                }
-              }
-
-              let importedKwGroupCount = 0;
-              if (data.keywordGroups && Array.isArray(data.keywordGroups)) {
-                for (const item of data.keywordGroups) {
-                  if (item.id && item.name) {
-                    await db.put('keyword_groups', item);
-                    importedKwGroupCount++;
-                  }
-                }
-              }
-
-              let importedKwCount = 0;
-              if (data.keywords && Array.isArray(data.keywords)) {
-                for (const item of data.keywords) {
-                  if (item.id && item.label) {
-                    await db.put('keywords', item);
-                    importedKwCount++;
-                  }
-                }
-              }
-
-              let msg = `${importedCount} 件の記録を読み込みました`;
-              if (importedTrashCount > 0) {
-                msg += `（ゴミ箱 ${importedTrashCount} 件を含む）`;
-              }
-              showMessage(msg);
-            } catch (err) {
-              console.error(err);
-              showMessage('ファイルの読み込みに失敗しました。正しいファイルかご確認ください。', true);
             }
-          };
-          reader.readAsText(file);
+
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('./sw.js');
+                    swRegistration = registration;
+
+                    // すでに waiting があれば更新通知
+                    if (registration.waiting) {
+                        showUpdateToast();
+                    }
+
+                    // 新しいSWが来たとき
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        if (!newWorker) return;
+
+                        newWorker.addEventListener('statechange', () => {
+                            // 既存ページを制御中なら「更新あり」と判断
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showUpdateToast();
+                            }
+                        });
+                    });
+
+                    // controller が切り替わったら一度だけ再読み込み
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        if (refreshing) return;
+                        refreshing = true;
+                        window.location.reload();
+                    });
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                }
+            });
         }
-      },
 
-      // --- アプリの初期化 ---
-      Initialize: {
-        show() {
-          document.getElementById('input-init-confirm').value = '';
-          document.getElementById('btn-exec-init').disabled = true;
-          document.getElementById('dialog-initialize').classList.remove('hidden');
-        },
+        // ==========================================
+        // 5. 起動
+        // ==========================================
 
-        close() {
-          document.getElementById('dialog-initialize').classList.add('hidden');
-        },
-
-        async exec() {
-          try {
-            const stores = ['app_meta', 'settings', 'entries', 'keyword_groups', 'keywords', 'drafts', 'trash', 'export_history'];
-            for (const store of stores) {
-              await db.clear(store);
-            }
-            
-            const now = new Date().toISOString();
-            for (const g of initialKeywordGroups) {
-              await db.put('keyword_groups', { ...g, createdAt: now, updatedAt: now });
-            }
-            for (const k of initialKeywordsData) {
-              await db.put('keywords', { ...k, isSystem: true, createdAt: now, updatedAt: now, schemaVersion: 1 });
-            }
-            
-            currentEditId = null;
-            Views.Record.helperStates = {};
-            Views.Record.initialState = null;
-            
-            showMessage('アプリを初期状態に戻しました');
-            this.close();
-            
-            // 初期化完了後は初回ガイドへ戻す
-            window.location.hash = '#guide';
-          } catch (e) {
-            console.error(e);
-            showMessage('初期化に失敗しました。', true);
-          }
+        function renderAppVersion() {
+            const el = document.getElementById('app-version-text');
+            if (el) el.textContent = APP_VERSION;
         }
-      }
-    };
 
-
-let swRegistration = null;
-let refreshing = false;
-
-function showUpdateToast() {
-  const toast = document.getElementById('update-toast');
-  if (toast) toast.classList.remove('hidden');
-}
-
-function hideUpdateToast() {
-  const toast = document.getElementById('update-toast');
-  if (toast) toast.classList.add('hidden');
-}
-
-function setupUpdateToastEvents() {
-  const btnNow = document.getElementById('btn-update-now');
-  const btnLater = document.getElementById('btn-update-later');
-
-  if (btnNow) {
-    btnNow.addEventListener('click', () => {
-      if (swRegistration && swRegistration.waiting) {
-        swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
-      }
-    });
-  }
-
-  if (btnLater) {
-    btnLater.addEventListener('click', () => {
-      hideUpdateToast();
-    });
-  }
-}
-
-function registerServiceWorker() {
-  if (!('serviceWorker' in navigator)) return;
-
-  window.addEventListener('load', async () => {
-    try {
-      const registration = await navigator.serviceWorker.register('./sw.js');
-      swRegistration = registration;
-
-      // すでに waiting があれば更新通知
-      if (registration.waiting) {
-        showUpdateToast();
-      }
-
-      // 新しいSWが来たとき
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing;
-        if (!newWorker) return;
-
-        newWorker.addEventListener('statechange', () => {
-          // 既存ページを制御中なら「更新あり」と判断
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            showUpdateToast();
-          }
+        window.addEventListener('DOMContentLoaded', () => {
+            renderAppVersion();
+            setupUpdateToastEvents();
+            registerServiceWorker();
+            App.init();
         });
-      });
 
-      // controller が切り替わったら一度だけ再読み込み
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (refreshing) return;
-        refreshing = true;
-        window.location.reload();
-      });
-    } catch (error) {
-      console.error('Service Worker registration failed:', error);
-    }
-  });
-}
+    </script>
 
-    // ==========================================
-    // 5. 起動
-    // ==========================================
-
-    function renderAppVersion() {
-      const el = document.getElementById('app-version-text');
-      if (el) el.textContent = APP_VERSION;
-    }
-
-window.addEventListener('DOMContentLoaded', () => {
-  renderAppVersion();
-  setupUpdateToastEvents();
-  registerServiceWorker();
-  App.init();
-});
-
-  </script>
-
-<div id="update-toast" class="hidden" style="
+    <div id="update-toast" class="hidden" style="
   position: fixed;
   left: 50%;
   bottom: 1rem;
@@ -2263,15 +2323,15 @@ window.addEventListener('DOMContentLoaded', () => {
   box-shadow: var(--shadow);
   padding: 1rem;
 ">
-  <div style="font-weight: 600; margin-bottom: 0.4rem;">新しい版があります</div>
-  <div class="text-sub" style="margin-bottom: 0.9rem;">
-    更新すると、最新の内容に切り替わります。
-  </div>
-  <div class="flex gap-2">
-    <button id="btn-update-now" class="btn btn-primary" style="flex: 1;">更新する</button>
-    <button id="btn-update-later" class="btn btn-secondary" style="flex: 1;">あとで</button>
-  </div>
-</div>
+        <div style="font-weight: 600; margin-bottom: 0.4rem;">新しい版があります</div>
+        <div class="text-sub" style="margin-bottom: 0.9rem;">
+            更新すると、最新の内容に切り替わります。
+        </div>
+        <div class="flex gap-2">
+            <button id="btn-update-now" class="btn btn-primary" style="flex: 1;">更新する</button>
+            <button id="btn-update-later" class="btn btn-secondary" style="flex: 1;">あとで</button>
+        </div>
+    </div>
 
 </body>
 </html>
